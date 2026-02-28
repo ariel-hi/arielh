@@ -1,0 +1,387 @@
+:root {
+    --gem-ruby: #ff4d4d;
+    --gem-sapphire: #4d94ff;
+    --gem-emerald: #4dff88;
+    --gem-topaz: #ffdb4d;
+    --gem-amethyst: #d14dff;
+    --gem-quartz: #ffffff;
+
+    --bg-dark: #050510;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+.game-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 100px auto 40px;
+    padding: 0 2rem;
+    height: calc(100vh - 140px);
+    z-index: 10;
+}
+
+/* Sidebar Styles */
+.game-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    padding: 1.2rem;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+}
+
+.xp-bar-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.xp-progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    transition: width 0.3s ease;
+}
+
+.combo-meter {
+    width: 100%;
+    height: 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    margin-top: 5px;
+}
+
+.combo-meter.active {
+    box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+    border-color: rgba(255, 77, 77, 0.5);
+}
+
+.combo-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    transition: width 0.1s linear;
+}
+
+/* Main Game Styles */
+.game-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--glass);
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+}
+
+.game-timer,
+.game-score {
+    display: flex;
+    flex-direction: column;
+}
+
+#time-left {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--gem-ruby);
+    text-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
+}
+
+#time-left.critical {
+    animation: pulse-red 0.5s infinite alternate;
+}
+
+@keyframes pulse-red {
+    from {
+        color: #ff4d4d;
+        text-shadow: 0 0 10px #ff4d4d;
+    }
+
+    to {
+        color: #fff;
+        text-shadow: 0 0 20px #ff4d4d;
+    }
+}
+
+#score-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--gem-emerald);
+    text-shadow: 0 0 15px rgba(77, 255, 136, 0.5);
+}
+
+.board-container {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    padding: 12px;
+    border-radius: 24px;
+    aspect-ratio: 1;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.gem-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+}
+
+.gem {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    z-index: 10;
+    aspect-ratio: 1;
+}
+
+.gem.selected .gem-inner {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px currentColor;
+    z-index: 50;
+}
+
+.gem-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gem-inner svg {
+    width: 65%;
+    height: 65%;
+}
+
+.gem.matching {
+    animation: gem-burst 0.3s forwards cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes gem-burst {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+        filter: brightness(2);
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Logbook Styles - Improved */
+.discoveries {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(102, 126, 234, 0.2);
+    border-radius: 20px;
+    padding: 1.5rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.discoveries h3 {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: #667eea;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+.log-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    height: 100%;
+}
+
+.log-entry {
+    font-size: 0.7rem;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    opacity: 0;
+    animation: scanline 0.3s forwards;
+}
+
+@keyframes scanline {
+    from {
+        transform: translateX(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.log-time {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.6rem;
+}
+
+.log-msg {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.log-entry.success .log-msg {
+    color: #4dff88;
+}
+
+.log-entry.warning .log-msg {
+    color: #ffdb4d;
+}
+
+.log-entry.error .log-msg {
+    color: #ff4d4d;
+}
+
+.log-entry.empty {
+    color: rgba(255, 255, 255, 0.1);
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Buttons */
+.primary-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    padding: 1.2rem 2.5rem;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+}
+
+.secondary-btn {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    background: rgba(255, 77, 77, 0.1);
+    color: #ff4d4d;
+    border-color: rgba(255, 77, 77, 0.2);
+}
+
+/* Overlay Status */
+#mission-status {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.status-success {
+    color: #4dff88;
+    text-shadow: 0 0 30px rgba(77, 255, 136, 0.4);
+}
+
+.status-failed {
+    color: #ff4d4d;
+    text-shadow: 0 0 30px rgba(255, 77, 77, 0.4);
+}
+
+.summary-stats {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2rem;
+    border-radius: 24px;
+    margin: 2rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

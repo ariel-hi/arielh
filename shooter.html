@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Space Shooter | Ariel H</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&family=Press+Start+2P&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="nav.css">
+    <style>
+        body {
+            background-color: #050510;
+            color: #fff;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .game-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 60px;
+            /* Offset for nav */
+            z-index: 1;
+        }
+
+        .game-wrapper {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(74, 120, 255, 0.3), 0 0 100px rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .game-info {
+            margin-top: 20px;
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            padding-bottom: 20px;
+        }
+
+        .controls-hint {
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        /* Background Nebula Effect */
+        #nebula-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+    <nav></nav>
+
+    <canvas id="nebula-bg"></canvas>
+
+    <main class="game-container fade-in">
+        <div class="game-wrapper">
+            <iframe src="shooter_game/index.html"></iframe>
+        </div>
+        <div class="game-info">
+            <p>SPACE SHOOTER ROGUELIKE</p>
+            <p class="controls-hint">WASD to Move | Space to Shoot</p>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="nav.js"></script>
+    <script>
+        initNav('shooter');
+
+        // Starfield background
+        const canvas = document.getElementById('nebula-bg');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        for (let i = 0; i < 200; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2,
+                speed: Math.random() * 0.5 + 0.1
+            });
+        }
+
+        function animate() {
+            ctx.fillStyle = '#050510';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#fff';
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = -star.size;
+                    star.x = Math.random() * canvas.width;
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+
+</html>

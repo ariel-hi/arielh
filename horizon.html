@@ -20,23 +20,19 @@
     <link rel="stylesheet" href="horizon.css">
 </head>
 
-<body>
-    <nav>
-        <a href="index.html" data-page="index">Home</a>
-        <a href="rufus.html" data-page="rufus">Rufus</a>
-        <a href="horizon.html" data-page="horizon">Horizon</a>
-        <a href="aether.html" data-page="aether">Aether</a>
-    </nav>
+<body class="dark-theme" style="margin: 0; padding: 0; overflow: hidden; background: #000;">
+    <nav></nav>
 
-    <canvas id="glCanvas"></canvas>
+    <canvas id="glCanvas" style="display: block; width: 100vw; height: 100vh;"></canvas>
 
-    <div class="overlay fade-in">
-        <h1>Event Horizon</h1>
+    <div class="info"
+        style="position: fixed; bottom: 20px; left: 20px; color: rgba(255,255,255,0.5); font-family: 'Space Mono', monospace; font-size: 12px; pointer-events: none;">
         <p>Singularity Simulation // WebGL 2.0</p>
     </div>
 
     <!-- Scripts -->
     <script src="nav.js"></script>
+    <script>initNav('horizon');</script>
     <script src="horizon.js"></script>
 </body>
 
