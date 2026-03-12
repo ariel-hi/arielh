@@ -10,6 +10,6 @@
   "description": "",
   "dependencies": {
     "parcel": "^2.16.4",
-    "pixi.js": "^8.17.0"
+    "pixi.js": "^7.4.2"
   }
 }
