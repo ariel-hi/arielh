@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<script
-    type="importmap">{"imports":{"54WCN":"./browserAll.0743ab99.js","76l6D":"./WebGPURenderer.04dc0570.js","gabBe":"./WebGPURenderer.5343150c.js","j1tld":"./browserAll.8fda29ea.js","jtX6T":"./WebGPURenderer.95f0daa7.js","k2Vv7":"./webworkerAll.a5d96d59.js","l2mHk":"./WebGLRenderer.1ebedb12.js","lJuLI":"./CanvasRenderer.a2d5334b.js"}}</script>
 
 <head>
     <meta charset="utf-8">
@@ -90,13 +88,26 @@
                 <div id="loading-progress"></div>
             </div>
         </div>
-    </div> <audio id="bg-music" src="music.4794c797.mp3" loop autoplay volume="0.25"></audio> <audio id="sfx-hit"
-        src="Hit%201.1ca32f45.mp3" preload volume="0.25"></audio> <audio id="sfx-destroy" src="destroy.2d74e718.wav"
-        preload volume="0.25"></audio> <audio id="sfx-defeat" src="Game%20Over.53031db2.mp3" preload
-        volume="0.25"></audio> <audio id="sfx-upgrade" src="upgrade.b0a32e88.mp3" preload style="display:none"
-        volume="0.25"></audio>
-    <script>document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("audio").forEach(e => { e.volume = .25 }); let e = document.getElementById("loading-progress"), t = document.getElementById("loading"), n = 0, d = setInterval(() => { n += 5, e.style.width = n + "%", n >= 100 && (clearInterval(d), setTimeout(() => { t.style.display = "none" }, 300)) }, 100) });</script>
-    <script src="index.js" type="module"></script>
+    </div>
+
+    <audio id="bg-music" src="music.4794c797.mp3" loop autoplay volume="0.25"></audio>
+    <audio id="sfx-hit" src="Hit 1.1ca32f45.mp3" preload volume="0.25"></audio>
+    <audio id="sfx-destroy" src="destroy.2d74e718.wav" preload volume="0.25"></audio>
+    <audio id="sfx-defeat" src="Game Over.53031db2.mp3" preload volume="0.25"></audio>
+    <audio id="sfx-upgrade" src="upgrade.b0a32e88.mp3" preload style="display:none" volume="0.25"></audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("audio").forEach(e => { e.volume = .25 });
+            let e = document.getElementById("loading-progress"),
+                t = document.getElementById("loading"),
+                n = 0,
+                d = setInterval(() => {
+                    n += 5, e.style.width = n + "%", n >= 100 && (clearInterval(d), setTimeout(() => { t.style.display = "none" }, 300))
+                }, 100)
+        });
+    </script>
+    <script src="shooter_game.js" type="module"></script>
 </body>
 
 </html>
