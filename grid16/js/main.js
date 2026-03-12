@@ -26,15 +26,19 @@ const mob = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 // Grid layout — always fixed position
 function getGrid() {
-    const size = Math.min(W * 0.94, H * (mob() ? 0.50 : 0.86));
+    const navH = 72;
+    const availH = H - navH;
+    const size = Math.min(W * 0.94, availH * (mob() ? 0.50 : 0.86));
     const gs = size / 4;
-    return { gs, x: (W - size) / 2, y: mob() ? H * 0.11 : (H - size) / 2 };
+    return { gs, x: (W - size) / 2, y: navH + (availH - size) / 2 };
 }
 
 // Expanded game layout
 function getExpand() {
-    const size = Math.min(W * 0.94, H * (mob() ? 0.50 : 0.86));
-    return { x: (W - size) / 2, y: mob() ? H * 0.11 : (H - size) / 2, size };
+    const navH = 72;
+    const availH = H - navH;
+    const size = Math.min(W * 0.94, availH * (mob() ? 0.50 : 0.86));
+    return { x: (W - size) / 2, y: navH + (availH - size) / 2, size };
 }
 
 let state = ST.TITLE, games = [], elim = [], activeIdx = 0, nextIdx = -1;
@@ -151,11 +155,6 @@ function drawCell(i, sx, sy, sw, sh) {
         ctx.lineTo(sx + sw * 0.1, sy + sh * 0.9);
         ctx.stroke();
         ctx.restore();
-        // Badge: small filled square in top-right corner
-        const bsz = sw * 0.18;
-        ctx.fillStyle = games[i].color + '50'; ctx.fillRect(sx + sw - bsz - 2, sy + 2, bsz, bsz);
-        ctx.strokeStyle = games[i].color + '90'; ctx.lineWidth = 1;
-        ctx.strokeRect(sx + sw - bsz - 2, sy + 2, bsz, bsz);
     }
     ctx.restore();
 }
@@ -242,11 +241,14 @@ function render(dt) {
     // Flash overlay
     if (flash > 0.01) { ctx.fillStyle = `rgba(255,30,60,${flash * 0.55})`; ctx.fillRect(0, 0, W, H); }
 
+    // UI Offset for navbar
+    const uiY = 72 + 14;
+
     // Life dots (top-left)
-    const dotR = 4, gap = 13, sx = 14, sy = 14;
+    const dotR = 4, gap = 13, sx = 14;
     for (let i = 0; i < 16; i++) {
         const r = (i / 8) | 0, c = i % 8;
-        ctx.beginPath(); ctx.arc(sx + c * gap + dotR, sy + r * (dotR * 2 + 4) + dotR, dotR, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(sx + c * gap + dotR, uiY + r * (dotR * 2 + 4) + dotR, dotR, 0, Math.PI * 2);
         ctx.fillStyle = elim[i] ? '#ff335530' : '#00ffaa'; ctx.fill();
     }
 
@@ -255,7 +257,7 @@ function render(dt) {
         ctx.textAlign = 'right'; ctx.textBaseline = 'top';
         ctx.font = "bold 11px 'Orbitron',sans-serif";
         ctx.fillStyle = clockSpd > 2.5 ? '#ff4422' : '#ffaa33';
-        ctx.fillText(`${clockSpd.toFixed(2)}×`, W - 14, 14);
+        ctx.fillText(`${clockSpd.toFixed(2)}×`, W - 14, uiY);
     }
 
     // Scanlines
