@@ -36,7 +36,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            margin-top: 60px;
+            margin-top: 72px;
             /* Offset for nav */
             z-index: 1;
         }
@@ -99,14 +99,47 @@
             <iframe src="shooter_game/index.html"></iframe>
         </div>
         <div class="game-info">
-            <p>SPACE SHOOTER ROGUELIKE</p>
+            <p>SPACE SHOOTER</p>
             <p class="controls-hint">WASD to Move | Space to Shoot</p>
         </div>
     </main>
 
+    <!-- Leaderboard UI -->
+    <div id="lb-overlay"
+        style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:900;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:opacity 0.3s;opacity:0;pointer-events:none;font-family:'Press Start 2P', monospace;">
+        <div
+            style="background:rgba(10,10,20,0.95);border:1px solid rgba(100,120,255,0.3);padding:30px;border-radius:12px;text-align:center;width:100%;max-width:440px;color:#fff;box-shadow:0 0 30px rgba(0,0,0,0.8);">
+            <h2 style="color:#4a78ff;margin-top:0;font-size:16px;line-height:1.4;">TRANSMISSION ENDED</h2>
+            <p style="font-size:10px;color:#aaa;margin-bottom:20px;">FINAL SCORE: <span id="lb-final-score"
+                    style="color:#4aff94;font-size:14px;">0</span></p>
+
+            <div id="lb-entry" style="margin-bottom:25px;display:flex;justify-content:center;gap:10px;">
+                <input type="text" id="lb-name" placeholder="NAME" maxlength="6"
+                    style="background:#0a0a10;color:#fff;border:1px solid #4a78ff;padding:12px;font-family:'Press Start 2P', monospace;text-align:center;width:120px;text-transform:uppercase;outline:none;font-size:12px;">
+                <button id="lb-submit"
+                    style="background:#4a78ff;color:#fff;border:none;padding:12px 16px;cursor:pointer;font-family:'Press Start 2P', monospace;font-size:10px;transition:0.2s;">LOG</button>
+            </div>
+
+            <div
+                style="text-align:left;font-size:10px;color:#888;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:5px;">
+                <span style="display:inline-block;width:30px;">#</span>
+                <span style="display:inline-block;width:150px;">CALLSIGN</span>
+                <span>SCORE</span>
+            </div>
+            <div id="lb-list"
+                style="text-align:left;font-size:10px;height:180px;overflow-y:auto;margin-bottom:20px;display:flex;flex-direction:column;gap:12px;">
+                <p style="text-align:center;color:#666;margin-top:20px;">Connecting to network...</p>
+            </div>
+
+            <button id="lb-close"
+                style="background:transparent;color:#aaa;border:1px solid #666;padding:10px 20px;cursor:pointer;font-family:'Press Start 2P', monospace;font-size:10px;transition:all 0.2s;">DISCONNECT</button>
+        </div>
+    </div>
+    </main>
+
     <!-- Scripts -->
     <script src="nav.js"></script>
-    <script>
+    <script type="module">
         initNav('shooter');
 
         // Starfield background
@@ -151,6 +184,104 @@
             requestAnimationFrame(animate);
         }
         animate();
+
+        // ------------------ Leaderboard Injection Logic ------------------ //
+        import { submitScore, fetchLeaderboard } from './shooter_leaderboard.js';
+
+        const lbOverlay = document.getElementById('lb-overlay');
+        const lbFinalScore = document.getElementById('lb-final-score');
+        const lbName = document.getElementById('lb-name');
+        const lbSubmit = document.getElementById('lb-submit');
+        const lbList = document.getElementById('lb-list');
+        const lbClose = document.getElementById('lb-close');
+        const lbEntry = document.getElementById('lb-entry');
+
+        let currentScore = 0;
+        let lbLoaded = false;
+
+        async function showLeaderboard(score) {
+            currentScore = score;
+            lbFinalScore.innerText = score.toString();
+            lbOverlay.style.opacity = '1';
+            lbOverlay.style.pointerEvents = 'auto';
+            lbEntry.style.display = 'flex';
+            lbName.disabled = false;
+            lbName.value = '';
+            lbSubmit.disabled = false;
+            lbSubmit.innerText = 'LOG';
+
+            await refreshLeaderboard();
+        }
+
+        async function refreshLeaderboard() {
+            lbList.innerHTML = '<p style="text-align:center;color:#666;margin-top:20px;">Connecting to network...</p>';
+            const scores = await fetchLeaderboard(50); // Get top 50
+
+            lbList.innerHTML = '';
+
+            if (scores.length === 0) {
+                lbList.innerHTML = '<p style="text-align:center;color:#666;margin-top:20px;">No records found.</p>';
+            } else {
+                scores.forEach((s, idx) => {
+                    // Prefix Space shooter scores if we eventually separate them, 
+                    // for now the fetch returns default grid16 table data.
+                    const r = document.createElement('div');
+                    r.style.display = 'flex';
+                    r.style.color = idx < 3 ? '#4aff94' : '#fff';
+
+                    const rankStr = (idx + 1).toString().padEnd(3, ' ');
+                    const nameStr = (s.name || 'ANON').substring(0, 6).padEnd(6, ' ');
+
+                    r.innerHTML = `
+                        <span style="display:inline-block;width:30px;opacity:0.6;">${rankStr}</span>
+                        <span style="display:inline-block;width:150px;letter-spacing:1px;">${nameStr}</span>
+                        <span style="color:#4a78ff;">${s.score}</span>
+                    `;
+                    lbList.appendChild(r);
+                });
+            }
+        }
+
+        lbSubmit.addEventListener('click', async () => {
+            const name = lbName.value.trim() || 'ANON';
+            lbSubmit.innerText = 'WAIT';
+            lbSubmit.disabled = true;
+
+            await submitScore({ name: name, score: currentScore });
+
+            lbSubmit.innerText = 'LOGGED';
+            lbName.disabled = true;
+            document.getElementById('lb-entry').style.display = 'none'; // Hide input after submit
+
+            await refreshLeaderboard();
+        });
+
+        lbClose.addEventListener('click', () => {
+            lbOverlay.style.opacity = '0';
+            lbOverlay.style.pointerEvents = 'none';
+        });
+
+        // Intercept iframe console to detect game over accurately
+        const iframe = document.querySelector('iframe');
+        const setupIframe = () => {
+            try {
+                const iframeWindow = iframe.contentWindow;
+                if (!iframeWindow.console._intercepted) {
+                    const originalLog = iframeWindow.console.log;
+                    iframeWindow.console.log = function (...args) {
+                        originalLog.apply(this, args);
+                        if (args.length >= 2 && typeof args[0] === 'string' && args[0].includes('Game over! Final score:')) {
+                            const finalScore = args[1];
+                            showLeaderboard(finalScore);
+                        }
+                    };
+                    iframeWindow.console._intercepted = true;
+                }
+            } catch (e) { } // Cross-origin or other error safeguards
+        };
+        iframe.addEventListener('load', setupIframe);
+        // Also fire just in case it's already loaded right now
+        setupIframe();
     </script>
 </body>
 

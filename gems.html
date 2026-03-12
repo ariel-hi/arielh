@@ -5,19 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Star Cluster Blitz | Ariel H</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@700&family=Outfit:wght@900&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@900&display=swap"
         rel="stylesheet">
 
     <!-- Styles -->
     <link rel="stylesheet" href="shared.css">
     <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="gems/gems.css">
+    <link rel="stylesheet" href="gems.css">
 </head>
 
 <body class="dark-theme">
@@ -25,89 +24,94 @@
 
     <canvas id="nebula-bg"></canvas>
 
-    <div class="game-layout fade-in">
-        <!-- Sidebar: Stats & Progression -->
-        <aside class="game-sidebar">
-            <div class="stat-card">
-                <span class="stat-label">EXPLORER RANK</span>
-                <span id="explorer-rank" class="stat-value">LVL 1</span>
-                <div class="xp-bar-container">
-                    <div id="xp-progress" class="xp-progress"></div>
+    <div id="game-container" class="fade-in">
+        <div class="game-layout">
+            <!-- Sidebar Left -->
+            <aside class="game-sidebar left">
+                <div class="stat-card">
+                    <span class="stat-label">EXPLORER RANK</span>
+                    <span id="explorer-rank" class="stat-value">LVL 1</span>
+                    <div class="xp-bar-container">
+                        <div id="xp-progress" class="xp-progress"></div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="stat-card">
-                <span class="stat-label">MISSION GOAL</span>
-                <span id="goal-value" class="stat-value">5,000</span>
-            </div>
-
-            <div class="stat-card">
-                <span class="stat-label">HIGH SCORE</span>
-                <span id="best-score" class="stat-value">0</span>
-            </div>
-
-            <div class="stat-card combo-card">
-                <span class="stat-label">HYPERDRIVE</span>
-                <div class="combo-meter">
-                    <div id="combo-fill" class="combo-fill"></div>
+                <div class="stat-card">
+                    <span class="stat-label">MISSION GOAL</span>
+                    <span id="goal-value" class="stat-value">5,000</span>
                 </div>
-            </div>
 
-            <button id="restart-btn" class="secondary-btn">ABORT MISSION</button>
-        </aside>
-
-        <!-- Main: Game Board -->
-        <main class="game-main">
-            <header class="game-header">
-                <div class="game-timer">
-                    <span id="timer-label">STABILITY</span>
-                    <span id="time-left">60s</span>
+                <div class="stat-card">
+                    <span class="stat-label">HIGH SCORE</span>
+                    <span id="best-score" class="stat-value">0</span>
                 </div>
-                <div class="game-score">
-                    <span id="score-label">ENERGY HARVESTED</span>
-                    <span id="score-value">0</span>
-                </div>
-            </header>
+            </aside>
 
-            <div class="board-container">
-                <div id="game-board" class="gem-grid">
-                    <!-- Gems injected by JS -->
-                </div>
-            </div>
-        </main>
+            <!-- Main Game -->
+            <main class="game-main">
+                <header class="game-header">
+                    <div class="header-segment">
+                        <span class="stat-label">STABILITY</span>
+                        <span id="time-left" class="header-value">45s</span>
+                    </div>
+                    <div class="header-segment right">
+                        <span class="stat-label">ENERGY HARVESTED</span>
+                        <span id="score-value" class="header-value">0</span>
+                    </div>
+                </header>
 
-        <!-- Right: Recent Discoveries -->
-        <aside class="game-sidebar discoveries">
-            <h3>LOGBOOK</h3>
-            <div id="log-entries" class="log-entries">
-                <div class="log-entry empty">Awaiting data...</div>
-            </div>
-        </aside>
+                <div class="board-container">
+                    <div id="game-board" class="gem-grid">
+                        <!-- Gems injected via JS -->
+                    </div>
+                </div>
+
+                <div class="game-controls">
+                    <div class="stat-card combo-card">
+                        <span class="stat-label">HYPERDRIVE</span>
+                        <div class="combo-meter">
+                            <div id="combo-fill" class="combo-fill"></div>
+                        </div>
+                    </div>
+                    <button id="restart-btn" class="secondary-btn">ABORT MISSION</button>
+                </div>
+            </main>
+
+            <!-- Sidebar Right -->
+            <aside class="game-sidebar right discoveries">
+                <div class="stat-card logbook">
+                    <span class="stat-label">MISSION LOG</span>
+                    <div id="log-entries" class="log-entries">
+                        <div class="log-entry empty">Awaiting data...</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 
     <!-- Overlays -->
     <div id="start-overlay" class="game-overlay">
         <div class="overlay-content">
-            <h1 class="glitch-text" data-text="STAR CLUSTER">STAR CLUSTER</h1>
-            <p>Harvest stellar energy to fuel your journey. Match 3 or more celestial bodies to collect energy.</p>
+            <h1 class="glow-text">STAR CLUSTER</h1>
+            <p>Harvest stellar energy to fuel your journey. Match 3 or more gems to collect energy.</p>
             <button id="start-btn" class="primary-btn">ENGAGE ENGINES</button>
         </div>
     </div>
 
     <div id="game-over-overlay" class="game-overlay hidden">
         <div class="overlay-content summary">
-            <h2 id="mission-status">MISSION COMPLETE</h2>
+            <h2 id="mission-status" class="status-msg">MISSION COMPLETE</h2>
             <div class="summary-stats">
                 <div class="sum-row">
-                    <span>Energy Harvested:</span>
+                    <span>ENERGY HARVESTED:</span>
                     <span id="final-score" class="sum-val">0</span>
                 </div>
                 <div class="sum-row">
-                    <span>Rank Progress:</span>
+                    <span>RANK PROGRESS:</span>
                     <span id="xp-gained" class="sum-val">+0 XP</span>
                 </div>
                 <div class="sum-row">
-                    <span>Max Combo:</span>
+                    <span>MAX COMBO:</span>
                     <span id="max-combo" class="sum-val">1x</span>
                 </div>
             </div>
@@ -118,7 +122,7 @@
     <!-- Scripts -->
     <script src="nav.js"></script>
     <script>initNav('gems');</script>
-    <script src="gems/gems.js"></script>
+    <script src="gems.js"></script>
 </body>
 
 </html>

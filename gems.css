@@ -1,0 +1,469 @@
+/* Star Cluster Blitz - Final Resilient Version */
+:root {
+    --gem-ruby: #ff4d4d;
+    --gem-sapphire: #4d94ff;
+    --gem-emerald: #4dff88;
+    --gem-topaz: #ffdb4d;
+    --gem-amethyst: #d14dff;
+    --gem-pulsar: #ffffff;
+
+    --bg-dark: #050510;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --primary: #667eea;
+}
+
+/* Reset Body Forcefully */
+body.dark-theme {
+    background-color: var(--bg-dark) !important;
+    background: radial-gradient(circle at center, #101030 0%, #050510 100%) !important;
+    color: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    /* Override shared.css flex */
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+nav {
+    z-index: 10000 !important;
+    /* Force on top of everything */
+}
+
+#nebula-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#game-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding-top: 100px;
+    /* Space for Nav */
+}
+
+.game-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    gap: 2rem;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    align-items: start;
+}
+
+/* Sidebar Styling */
+.game-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    padding: 1.2rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Central Column */
+.game-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.game-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2.5rem;
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+}
+
+.header-segment.right {
+    text-align: right;
+}
+
+.header-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem;
+    font-weight: 900;
+    display: block;
+}
+
+#time-left {
+    color: var(--gem-ruby);
+    text-shadow: 0 0 15px rgba(255, 77, 77, 0.3);
+}
+
+#score-value {
+    color: var(--gem-emerald);
+    text-shadow: 0 0 15px rgba(77, 255, 136, 0.3);
+}
+
+.board-container {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 24px;
+    aspect-ratio: 1;
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+}
+
+.gem-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+}
+
+/* Gems */
+.gem {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.gem:hover {
+    transform: scale(1.08);
+    z-index: 20;
+}
+
+.gem.selected .gem-inner {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px currentColor;
+    z-index: 50;
+    border-color: #fff;
+}
+
+.gem-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.gem-inner svg {
+    width: 65%;
+    height: 65%;
+    filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Nova Gem Effects */
+.gem-nova .gem-inner {
+    border: 2px solid #fff;
+    box-shadow: 0 0 20px currentColor, inset 0 0 15px currentColor;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.nova-aura {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    border-radius: 50%;
+    background: radial-gradient(circle, currentColor 0%, transparent 70%);
+    opacity: 0.3;
+    animation: nova-pulse 1.5s infinite alternate;
+}
+
+@keyframes nova-pulse {
+    from {
+        transform: scale(0.9);
+        opacity: 0.2;
+    }
+
+    to {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+}
+
+/* Pulsar Gem Effects */
+.gem-pulsar .gem-inner {
+    border: 2px dashed #fff;
+    animation: pulsar-rotate 4s linear infinite;
+    box-shadow: 0 0 30px #fff, inset 0 0 20px #fff;
+}
+
+@keyframes pulsar-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.pulsar-shimmer {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    background: conic-gradient(from 0deg, transparent, #fff, transparent);
+    opacity: 0.2;
+    animation: pulsar-shimmer 2s linear infinite;
+}
+
+@keyframes pulsar-shimmer {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+/* Matching/Bursting */
+.gem.matching {
+    animation: match-pop 0.3s forwards ease-in;
+    z-index: 100;
+}
+
+@keyframes match-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+        filter: brightness(3);
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+/* Controls */
+.game-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.combo-meter {
+    width: 100%;
+    height: 14px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.combo-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    transition: width 0.1s linear;
+}
+
+/* Logbook */
+.logbook {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.log-entries {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+}
+
+.log-entry {
+    padding-left: 10px;
+    border-left: 2px solid var(--primary);
+    opacity: 0.8;
+}
+
+.log-entry.success {
+    border-color: var(--gem-emerald);
+    color: var(--gem-emerald);
+}
+
+.log-entry.warning {
+    border-color: var(--gem-topaz);
+    color: var(--gem-topaz);
+}
+
+.log-entry.error {
+    border-color: var(--gem-ruby);
+    color: var(--gem-ruby);
+}
+
+/* Overlays */
+.game-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5, 5, 15, 0.9);
+    z-index: 500;
+    /* Below Nav (1000) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(15px);
+    transition: opacity 0.4s, transform 0.4s;
+}
+
+.game-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.overlay-content {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3rem;
+    border-radius: 32px;
+    text-align: center;
+    max-width: 550px;
+}
+
+.glow-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 4rem;
+    text-shadow: 0 0 30px var(--primary);
+    margin-bottom: 2rem;
+}
+
+.status-msg {
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 2rem;
+}
+
+.status-success {
+    color: var(--gem-emerald);
+    text-shadow: 0 0 20px rgba(77, 255, 136, 0.4);
+}
+
+.status-failed {
+    color: var(--gem-ruby);
+    text-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+}
+
+/* Buttons */
+.primary-btn {
+    background: linear-gradient(135deg, var(--primary), #764ba2);
+    color: white;
+    padding: 1.2rem 2.5rem;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    transition: transform 0.2s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+}
+
+.secondary-btn {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 1.2rem;
+    border-radius: 10px;
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Floating Score */
+.floating-score {
+    position: absolute;
+    pointer-events: none;
+    z-index: 500;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 20px var(--gem-emerald);
+    animation: float-rise 0.8s forwards cubic-bezier(0.1, 0.5, 0.5, 1);
+}
+
+@keyframes float-rise {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+    }
+
+    30% {
+        transform: translateY(-20px) scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-60px) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .game-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .game-sidebar.left,
+    .game-sidebar.right {
+        display: none;
+    }
+}

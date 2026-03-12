@@ -1,0 +1,11 @@
+{
+    "name": "GRID16",
+    "short_name": "GRID16",
+    "description": "16 micro-games. Survive the grid.",
+    "start_url": "/",
+    "display": "fullscreen",
+    "orientation": "any",
+    "background_color": "#0a0a0a",
+    "theme_color": "#00ffaa",
+    "icons": []
+}

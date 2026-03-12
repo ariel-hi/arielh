@@ -1,0 +1,10 @@
+node_modules/
+.parcel-cache/
+*.dump
+
+# Shooter game build artifacts (only the current Parcel output is needed)
+shooter_game/dist/
+shooter_game/src/
+shooter_game/node_modules/
+shooter_game/.parcel-cache/
+shooter_game/package-lock.json

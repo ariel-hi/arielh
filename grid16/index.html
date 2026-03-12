@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="description" content="GRID16 — 16 micro-games. Survive the grid. How long can you last?">
+  <link rel="manifest" href="./manifest.json">
+  <title>GRID16</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="../nav.css">
+</head>
+
+<body class="dark-theme">
+  <nav></nav>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- Virtual D-Pad -->
+  <div id="dpad" class="dpad hidden">
+    <div class="dpad-btn dpad-up" data-dir="up"><svg viewBox="0 0 40 40">
+        <polygon points="20,8 32,28 8,28" fill="currentColor" />
+      </svg></div>
+    <div class="dpad-btn dpad-left" data-dir="left"><svg viewBox="0 0 40 40">
+        <polygon points="8,20 28,8 28,32" fill="currentColor" />
+      </svg></div>
+    <div class="dpad-btn dpad-right" data-dir="right"><svg viewBox="0 0 40 40">
+        <polygon points="32,20 12,8 12,32" fill="currentColor" />
+      </svg></div>
+    <div class="dpad-btn dpad-down" data-dir="down"><svg viewBox="0 0 40 40">
+        <polygon points="20,32 8,12 32,12" fill="currentColor" />
+      </svg></div>
+    <div class="dpad-center"></div>
+  </div>
+
+  <!-- Title Screen -->
+  <div id="title-screen" class="overlay">
+    <div class="overlay-content">
+      <h1 class="title-text">GRID<span class="accent">16</span></h1>
+      <p class="subtitle">SURVIVE THE GRID</p>
+      <div class="instructions">
+        <div class="instruction-row"><span class="key">←↑↓→</span> or <span class="key">D-PAD</span></div>
+        <div class="instruction-row">16 games from a pool of 20 &bull; speed increases &bull; survive all</div>
+      </div>
+      <button id="start-btn" class="neon-btn">▶ PLAY</button>
+      <button id="board-btn" class="neon-btn secondary">🏆 SCORES</button>
+    </div>
+  </div>
+
+  <!-- Game Over Screen -->
+  <div id="gameover-screen" class="overlay hidden">
+    <div class="overlay-content">
+      <h1 class="title-text">COLLAPSE<span class="accent">.</span></h1>
+      <div id="final-stats" class="stats-grid"></div>
+      <div id="name-entry" class="name-entry">
+        <input id="player-name" type="text" maxlength="12" placeholder="ENTER NAME" autocomplete="off" autocorrect="off"
+          spellcheck="false">
+        <button id="submit-btn" class="neon-btn">SUBMIT</button>
+      </div>
+      <div id="lb-results" class="lb-results hidden"></div>
+      <button id="restart-btn" class="neon-btn" style="margin-top:16px">▶ RETRY</button>
+    </div>
+  </div>
+
+  <!-- Leaderboard Screen -->
+  <div id="board-screen" class="overlay hidden">
+    <div class="overlay-content">
+      <h1 class="title-text">TOP <span class="accent">SURVIVORS</span></h1>
+      <div id="board-list" class="lb-results"></div>
+      <button id="board-close" class="neon-btn" style="margin-top:24px">← BACK</button>
+    </div>
+  </div>
+
+  <script src="../nav.js"></script>
+  <script>initNav('grid16');</script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+
+</html>

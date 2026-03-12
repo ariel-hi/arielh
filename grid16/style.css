@@ -1,0 +1,338 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --accent: #00ffaa;
+  --danger: #ff3355;
+  --text: #e0e0e0;
+  --font-d: 'Orbitron', sans-serif;
+  --font-m: 'Share Tech Mono', monospace;
+  --sai-t: env(safe-area-inset-top, 0px);
+  --sai-b: env(safe-area-inset-bottom, 0px);
+  --sai-l: env(safe-area-inset-left, 0px);
+  --sai-r: env(safe-area-inset-right, 0px);
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-m);
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#game-canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* D-Pad */
+.dpad {
+  position: fixed;
+  z-index: 50;
+  bottom: calc(20px + var(--sai-b));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 160px;
+  pointer-events: auto;
+}
+
+.dpad.hidden {
+  display: none;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(0, 255, 170, 0.08);
+  border: 1.5px solid rgba(0, 255, 170, 0.25);
+  color: rgba(0, 255, 170, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.dpad-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dpad-btn.active,
+.dpad-btn:active {
+  background: rgba(0, 255, 170, 0.25);
+  border-color: rgba(0, 255, 170, 0.7);
+  color: rgba(0, 255, 170, 0.9);
+}
+
+.dpad-up {
+  top: 0;
+  left: 53px;
+}
+
+.dpad-left {
+  top: 53px;
+  left: 0;
+}
+
+.dpad-right {
+  top: 53px;
+  left: 106px;
+}
+
+.dpad-down {
+  top: 106px;
+  left: 53px;
+}
+
+.dpad-center {
+  position: absolute;
+  top: 53px;
+  left: 53px;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(0, 255, 170, 0.03);
+  border: 1px solid rgba(0, 255, 170, 0.08);
+  pointer-events: none;
+}
+
+/* Overlays */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 10, 10, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: var(--sai-t) var(--sai-r) var(--sai-b) var(--sai-l);
+}
+
+.overlay.hidden {
+  display: none;
+}
+
+.overlay-content {
+  text-align: center;
+  max-width: 440px;
+  width: 100%;
+  padding: 24px 20px;
+}
+
+.title-text {
+  font-family: var(--font-d);
+  font-weight: 900;
+  font-size: clamp(2.4rem, 9vw, 4.5rem);
+  letter-spacing: .08em;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(0, 255, 170, 0.4), 0 0 60px rgba(0, 255, 170, 0.15);
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.title-text .accent {
+  color: var(--accent);
+  text-shadow: 0 0 20px rgba(0, 255, 170, 0.7), 0 0 60px rgba(0, 255, 170, 0.35);
+}
+
+.subtitle {
+  font-family: var(--font-m);
+  font-size: clamp(.75rem, 2.8vw, 1rem);
+  color: rgba(0, 255, 170, 0.6);
+  letter-spacing: .35em;
+  margin-bottom: 28px;
+}
+
+.instructions {
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.instruction-row {
+  font-size: clamp(.68rem, 2.4vw, 0.82rem);
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: .04em;
+}
+
+.key {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid rgba(0, 255, 170, 0.3);
+  border-radius: 4px;
+  color: var(--accent);
+  font-size: .78em;
+}
+
+.neon-btn {
+  display: block;
+  width: 100%;
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: clamp(.9rem, 3.2vw, 1.15rem);
+  letter-spacing: .12em;
+  padding: 13px 28px;
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.neon-btn:hover,
+.neon-btn:active {
+  background: rgba(0, 255, 170, 0.12);
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.2);
+}
+
+.neon-btn.secondary {
+  color: rgba(0, 255, 170, 0.5);
+  border-color: rgba(0, 255, 170, 0.25);
+  font-size: clamp(.75rem, 2.6vw, 0.95rem);
+  padding: 10px 20px;
+}
+
+.neon-btn.secondary:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--font-d);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--accent);
+  display: block;
+}
+
+.stat-label {
+  font-size: .68rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Name Entry */
+.name-entry {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.name-entry input {
+  flex: 1;
+  background: #111;
+  color: var(--accent);
+  border: 2px solid rgba(0, 255, 170, 0.35);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-m);
+  font-size: 1rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  outline: none;
+  -webkit-user-select: auto;
+  user-select: auto;
+  touch-action: auto;
+}
+
+.name-entry input:focus {
+  border-color: var(--accent);
+}
+
+.name-entry .neon-btn {
+  width: auto;
+  margin: 0;
+  padding: 10px 18px;
+  font-size: .85rem;
+}
+
+/* Leaderboard */
+.lb-results {
+  text-align: left;
+}
+
+.lb-results.hidden {
+  display: none;
+}
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: .82rem;
+}
+
+.lb-rank {
+  font-family: var(--font-d);
+  color: rgba(0, 255, 170, 0.5);
+  width: 26px;
+  font-size: .75rem;
+}
+
+.lb-name {
+  flex: 1;
+  color: #fff;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.lb-score {
+  color: var(--accent);
+  font-family: var(--font-d);
+  font-size: .9rem;
+}
+
+.lb-speed {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: .72rem;
+}
+
+.lb-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.25);
+  padding: 20px;
+  font-size: .82rem;
+}

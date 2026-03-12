@@ -1,10 +1,14 @@
+const isSub = window.location.pathname.includes('/grid16/');
+const base = isSub ? '../' : '';
+
 const navHTML = `
-    <a href="index.html" data-page="index">Home</a>
-    <a href="rufus.html" data-page="rufus">Rufus</a>
-    <a href="horizon.html" data-page="horizon">Horizon</a>
-    <a href="nebula.html" data-page="nebula">Nebula</a>
-    <a href="shooter.html" data-page="shooter">Shooter</a>
-    <a href="gems.html" data-page="gems">Gems</a>
+    <a href="${base}index.html" data-page="index">Home</a>
+    <a href="${base}rufus.html" data-page="rufus">Rufus</a>
+    <a href="${base}horizon.html" data-page="horizon">Horizon</a>
+    <a href="${base}nebula.html" data-page="nebula">Nebula</a>
+    <a href="${base}shooter.html" data-page="shooter">Shooter</a>
+    <a href="${base}gems.html" data-page="gems">Gems</a>
+    <a href="${base}grid16/index.html" data-page="grid16">Grid16</a>
 `;
 
 function initNav(pageId) {

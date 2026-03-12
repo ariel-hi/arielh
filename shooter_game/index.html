@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<script
+    type="importmap">{"imports":{"54WCN":"./browserAll.4829a5c2.js","76l6D":"./WebGPURenderer.b9256503.js","gabBe":"./WebGPURenderer.0bb1a843.js","j1tld":"./browserAll.537da2cb.js","jtX6T":"./WebGPURenderer.58fd3c9a.js","k2Vv7":"./webworkerAll.de3b3db8.js","l2mHk":"./WebGLRenderer.e90b3687.js","lJuLI":"./CanvasRenderer.8c443327.js"}}</script>
 
 <head>
     <meta charset="utf-8">
@@ -88,13 +90,14 @@
                 <div id="loading-progress"></div>
             </div>
         </div>
-    </div> <audio id="bg-music" src="music.4794c797.mp3" loop autoplay volume="0.25"></audio> <audio id="sfx-hit"
-        src="Hit%201.1ca32f45.mp3" preload volume="0.25"></audio> <audio id="sfx-destroy" src="destroy.2d74e718.wav"
-        preload volume="0.25"></audio> <audio id="sfx-defeat" src="Game%20Over.53031db2.mp3" preload
-        volume="0.25"></audio> <audio id="sfx-upgrade" src="upgrade.b0a32e88.mp3" preload style="display:none"
-        volume="0.25"></audio>
+    </div>
+    <audio id="bg-music" src="music.4794c797.4794c797.mp3" loop autoplay volume="0.25"></audio>
+    <audio id="sfx-hit" src="Hit%201.1ca32f45.1ca32f45.mp3" preload volume="0.25"></audio>
+    <audio id="sfx-destroy" src="destroy.2d74e718.2d74e718.wav" preload volume="0.25"></audio>
+    <audio id="sfx-defeat" src="Game%20Over.53031db2.53031db2.mp3" preload volume="0.25"></audio>
+    <audio id="sfx-upgrade" src="upgrade.b0a32e88.b0a32e88.mp3" preload style="display:none" volume="0.25"></audio>
     <script>document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("audio").forEach(e => { e.volume = .25 }); let e = document.getElementById("loading-progress"), t = document.getElementById("loading"), n = 0, d = setInterval(() => { n += 5, e.style.width = n + "%", n >= 100 && (clearInterval(d), setTimeout(() => { t.style.display = "none" }, 300)) }, 100) });</script>
-    <script src="SpaceShooter.b25e51d9.js" type="module"></script>
+    <script src="shooter_game.e318d752.js" type="module"></script>
 </body>
 
 </html>
