@@ -46,12 +46,17 @@ body {
 .dpad {
   position: fixed;
   z-index: 50;
-  bottom: calc(20px + var(--sai-b));
+  bottom: calc(30px + var(--sai-b));
   left: 50%;
   transform: translateX(-50%);
-  width: 160px;
-  height: 160px;
+  width: 170px;
+  height: 170px;
   pointer-events: auto;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(0, 255, 170, 0.1);
 }
 
 .dpad.hidden {
@@ -60,17 +65,18 @@ body {
 
 .dpad-btn {
   position: absolute;
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
   background: rgba(0, 255, 170, 0.08);
-  border: 1.5px solid rgba(0, 255, 170, 0.25);
-  color: rgba(0, 255, 170, 0.55);
+  border: 2px solid rgba(0, 255, 170, 0.2);
+  color: rgba(0, 255, 170, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   touch-action: none;
+  transition: all 0.1s ease;
 }
 
 .dpad-btn svg {
@@ -87,34 +93,45 @@ body {
 
 .dpad-up {
   top: 0;
-  left: 53px;
+  left: 56px;
 }
 
 .dpad-left {
-  top: 53px;
+  top: 56px;
   left: 0;
 }
 
 .dpad-right {
-  top: 53px;
-  left: 106px;
+  top: 56px;
+  left: 112px;
 }
 
 .dpad-down {
-  top: 106px;
-  left: 53px;
+  top: 112px;
+  left: 56px;
 }
 
 .dpad-center {
   position: absolute;
-  top: 53px;
-  left: 53px;
-  width: 54px;
-  height: 54px;
-  border-radius: 12px;
-  background: rgba(0, 255, 170, 0.03);
-  border: 1px solid rgba(0, 255, 170, 0.08);
+  top: 56px;
+  left: 56px;
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: rgba(0, 255, 170, 0.05);
+  border: 1px solid rgba(0, 255, 170, 0.15);
   pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dpad-center::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(0, 255, 170, 0.2);
 }
 
 /* Overlays */

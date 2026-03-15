@@ -6,7 +6,7 @@ import { submitScore, fetchLeaderboard } from './leaderboard.js';
 const GS = GAME_SIZE, GRID = GS * 4;
 const BASE_SWITCH = 5.0, SPEED_INC = 0.03, FAIL_DUR = 0.35;
 const SW_TOTAL = 1.2, SW_P1 = 0.3, SW_P2 = 0.85;
-const ST = { TITLE: 0, ACTIVE: 1, SWITCHING: 2, FAILING: 3, OVER: 4 };
+const ST = { TITLE: 0, ACTIVE: 1, SWITCHING: 2, FAILING: 3, OVER: 4, STARTING: 5 };
 const lp = (a, b, t) => a + (b - a) * t;
 
 const canvas = document.getElementById('game-canvas');
@@ -51,7 +51,7 @@ function start() {
     clockSpd = 1; maxSpd = 1; score = 0; switchT = BASE_SWITCH;
     shake = 0; flash = 0; gamesLostCount = 0; expandT = 0;
     activeIdx = (Math.random() * 16) | 0; expandIdx = activeIdx;
-    state = ST.ACTIVE; audio.init(); audio.resume();
+    state = ST.STARTING; transT = 0; audio.init(); audio.resume();
     document.getElementById('lb-results').classList.add('hidden');
     document.getElementById('name-entry').style.display = 'flex';
 }
@@ -127,6 +127,13 @@ function update(dt) {
             nextIdx = pickNext();
             if (nextIdx === -1) { clockSpd += SPEED_INC; maxSpd = Math.max(maxSpd, clockSpd); switchT = BASE_SWITCH / clockSpd; return; }
             transT = 0; state = ST.SWITCHING; audio.playSwitch();
+        }
+    }
+    if (state === ST.STARTING) {
+        transT += dt;
+        if (transT >= 1.5) {
+            state = ST.ACTIVE;
+            transT = 0;
         }
     }
     if (state === ST.FAILING) { transT += dt; if (transT >= FAIL_DUR) { transT = 0; state = ST.SWITCHING; } }
@@ -258,6 +265,24 @@ function render(dt) {
         ctx.font = "bold 11px 'Orbitron',sans-serif";
         ctx.fillStyle = clockSpd > 2.5 ? '#ff4422' : '#ffaa33';
         ctx.fillText(`${clockSpd.toFixed(2)}×`, W - 14, uiY);
+    }
+
+    // READY? Overlay
+    if (state === ST.STARTING) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(10, 8, 20, 0.7)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        
+        // Progressively zoom the text
+        const p = Math.min(1, transT / 0.5);
+        const s = lp(0.5, 1, p);
+        ctx.scale(s, s);
+        ctx.font = "bold 40px 'Orbitron',sans-serif";
+        ctx.fillStyle = '#00ffaa';
+        ctx.shadowColor = '#00ffaa'; ctx.shadowBlur = 15;
+        ctx.fillText('READY?', (W / 2) / s, (H / 2) / s);
+        ctx.restore();
     }
 
     // Scanlines

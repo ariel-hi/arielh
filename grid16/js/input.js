@@ -23,54 +23,101 @@ export class InputManager {
       dpad.classList.remove('hidden');
     }
 
-    const btns = dpad.querySelectorAll('.dpad-btn');
-    btns.forEach(btn => {
-      const dir = btn.dataset.dir;
+    const resetDpadSignals = () => {
+      this.keys.up = false;
+      this.keys.down = false;
+      this.keys.left = false;
+      this.keys.right = false;
+      dpad.querySelectorAll('.dpad-btn').forEach(b => b.classList.remove('active'));
+    };
 
-      btn.addEventListener('touchstart', e => {
-        e.preventDefault();
-        for (const touch of e.changedTouches) {
-          this._touchIds[touch.identifier] = dir;
-        }
-        this.keys[dir] = true;
-        btn.classList.add('active');
-      }, { passive: false });
+    const handleDpadTouch = (e) => {
+      e.preventDefault();
+      const rect = dpad.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      // Reset all before calculating
+      resetDpadSignals();
 
-      btn.addEventListener('touchend', e => {
-        e.preventDefault();
-        for (const touch of e.changedTouches) {
-          delete this._touchIds[touch.identifier];
+      if (e.type === 'touchend' || e.type === 'touchcancel') {
+        if (e.touches.length > 0) {
+          // If there are still touches, re-process with the first one
+          processTouch(e.touches[0]);
         }
-        // Only release if no other touch is pressing this direction
-        const stillPressed = Object.values(this._touchIds).includes(dir);
-        if (!stillPressed) {
-          this.keys[dir] = false;
-          btn.classList.remove('active');
-        }
-      }, { passive: false });
+        return;
+      }
 
-      btn.addEventListener('touchcancel', e => {
-        for (const touch of e.changedTouches) {
-          delete this._touchIds[touch.identifier];
-        }
-        this.keys[dir] = false;
-        btn.classList.remove('active');
-      }, { passive: false });
+      processTouch(e.touches[0]);
+    };
 
-      // Mouse fallback for desktop testing
-      btn.addEventListener('mousedown', e => {
-        e.preventDefault();
-        this.keys[dir] = true;
-        btn.classList.add('active');
+    const processTouch = (touch) => {
+      const rect = dpad.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const dx = touch.clientX - centerX;
+      const dy = touch.clientY - centerY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      // Define a deadzone in the center
+      const deadzone = rect.width * 0.12;
+      if (dist < deadzone) return;
+
+      // Calculate direction based on angle
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      
+      // Up: -135 to -45
+      // Down: 45 to 135
+      // Left: 135 to 180 or -180 to -135
+      // Right: -45 to 45
+      
+      if (angle >= -135 && angle <= -45) {
+        this.keys.up = true;
+        dpad.querySelector('.dpad-up').classList.add('active');
+      } else if (angle >= 45 && angle <= 135) {
+        this.keys.down = true;
+        dpad.querySelector('.dpad-down').classList.add('active');
+      } else if (Math.abs(angle) > 135) {
+        this.keys.left = true;
+        dpad.querySelector('.dpad-left').classList.add('active');
+      } else if (Math.abs(angle) < 45) {
+        this.keys.right = true;
+        dpad.querySelector('.dpad-right').classList.add('active');
+      }
+    };
+
+    dpad.addEventListener('touchstart', handleDpadTouch, { passive: false });
+    dpad.addEventListener('touchmove', handleDpadTouch, { passive: false });
+    dpad.addEventListener('touchend', handleDpadTouch, { passive: false });
+    dpad.addEventListener('touchcancel', handleDpadTouch, { passive: false });
+
+    // Mouse fallback for desktop testing
+    let isMouseDown = false;
+    dpad.addEventListener('mousedown', e => {
+      isMouseDown = true;
+      handleDpadTouch({ 
+        preventDefault: () => {}, 
+        clientX: e.clientX, 
+        clientY: e.clientY,
+        touches: [{ clientX: e.clientX, clientY: e.clientY }],
+        type: 'mousedown'
       });
-      btn.addEventListener('mouseup', e => {
-        this.keys[dir] = false;
-        btn.classList.remove('active');
+    });
+    window.addEventListener('mousemove', e => {
+      if (!isMouseDown) return;
+      handleDpadTouch({ 
+        preventDefault: () => {}, 
+        clientX: e.clientX, 
+        clientY: e.clientY,
+        touches: [{ clientX: e.clientX, clientY: e.clientY }],
+        type: 'mousemove'
       });
-      btn.addEventListener('mouseleave', e => {
-        this.keys[dir] = false;
-        btn.classList.remove('active');
-      });
+    });
+    window.addEventListener('mouseup', () => {
+      if (!isMouseDown) return;
+      isMouseDown = false;
+      resetDpadSignals();
     });
 
     // Prevent default touch on canvas to avoid scroll
