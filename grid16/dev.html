@@ -163,8 +163,8 @@
             </svg></div>
     </div>
     <script type="module">
-        import { ALL_GAMES, GAME_SIZE } from '/js/microgames.js';
-        import { InputManager } from '/js/input.js';
+        import { ALL_GAMES, GAME_SIZE } from './js/microgames.js';
+        import { InputManager } from './js/input.js';
         const S = GAME_SIZE, canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d'), input = new InputManager();
         let W, H, games, cur = 0, spd = 1, failT = 0;
         function resize() { const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight; canvas.width = W * d; canvas.height = H * d; canvas.style.width = W + 'px'; canvas.style.height = H + 'px'; ctx.setTransform(d, 0, 0, d, 0, 0); }
@@ -214,9 +214,55 @@
                 ctx.beginPath(); ctx.moveTo(20, 20); ctx.lineTo(S - 20, S - 20); ctx.moveTo(S - 20, 20); ctx.lineTo(20, S - 20); ctx.stroke();
             }
             ctx.restore();
+
+            // Game hint and controls
+            const cx = W / 2;
+            const cy = oy + sz + 38;
+            
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.font = "bold 14px 'Orbitron',sans-serif";
+            ctx.fillStyle = '#fff';
+            ctx.fillText(g.hint, cx, oy + sz + 32);
+
+            if (g.controls) {
+                const gap = 20;
+                const totalW = (g.controls.length - 1) * gap;
+                let startX = cx - totalW / 2;
+                g.controls.forEach(ctrl => {
+                    drawControlIcon(startX, oy + sz + 58, ctrl, g.color);
+                    startX += gap;
+                });
+            }
+
             // Game name
-            ctx.fillStyle = g.color; ctx.font = "bold 13px 'Orbitron',sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-            ctx.fillText(g.name, W / 2, oy + sz + 8);
+            ctx.fillStyle = g.color; ctx.font = "bold 11px 'Orbitron',sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.fillText(g.name, W / 2, oy - 22);
+        }
+
+        function drawControlIcon(x, y, type, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.0;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            const s = 5;
+            if (type === 'up') {
+                ctx.moveTo(0, s); ctx.lineTo(0, -s); // stem
+                ctx.moveTo(-3, -s+3); ctx.lineTo(0, -s); ctx.lineTo(3, -s+3); // head
+            } else if (type === 'down') {
+                ctx.moveTo(0, -s); ctx.lineTo(0, s); // stem
+                ctx.moveTo(-3, s-3); ctx.lineTo(0, s); ctx.lineTo(3, s-3); // head
+            } else if (type === 'left') {
+                ctx.moveTo(s, 0); ctx.lineTo(-s, 0); // stem
+                ctx.moveTo(-s+3, -3); ctx.lineTo(-s, 0); ctx.lineTo(-s+3, 3); // head
+            } else if (type === 'right') {
+                ctx.moveTo(-s, 0); ctx.lineTo(s, 0); // stem
+                ctx.moveTo(s-3, -3); ctx.lineTo(s, 0); ctx.lineTo(s-3, 3); // head
+            }
+            ctx.stroke();
+            ctx.restore();
         }
         requestAnimationFrame(loop);
     </script>

@@ -46,21 +46,6 @@ canvas#glcanvas {
     line-height: 1.6;
 }
 
-/* Ensure nav is visible on dark background */
-nav {
-    background: rgba(0, 0, 0, 0.2) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-}
-
-nav a {
-    color: rgba(255, 255, 255, 0.7) !important;
-}
-
-nav a:hover,
-nav a.active {
-    color: #fff !important;
-    background: rgba(255, 255, 255, 0.1) !important;
-}
 
 @media screen and (max-width: 768px) {
     .overlay {

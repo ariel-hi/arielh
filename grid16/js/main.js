@@ -227,8 +227,38 @@ function render(dt) {
         if (expandT > 0.55) {
             ctx.globalAlpha = Math.min(1, (expandT - 0.55) * 2.2);
             ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-            ctx.font = "bold 12px 'Orbitron',sans-serif";
+            ctx.font = "bold 11px 'Orbitron',sans-serif";
             ctx.fillStyle = gc + 'aa'; ctx.fillText(games[expandIdx].name, ex + 9, ey + 9);
+            ctx.globalAlpha = 1;
+        }
+
+        // Game hint and controls
+        if (expandT > 0.6) {
+            const curGame = games[expandIdx];
+            const a = Math.min(1, (expandT - 0.6) * 2.5);
+            ctx.globalAlpha = a;
+            
+            // Hint text at the top center
+            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+            ctx.font = "bold 13px 'Orbitron',sans-serif";
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = '#000'; ctx.shadowBlur = 4;
+            ctx.fillText(curGame.hint, ex + ew / 2, ey + 11);
+            ctx.shadowBlur = 0;
+
+            // Controls below hint
+            if (curGame.controls) {
+                const cx = ex + ew / 2;
+                const cy = ey + 36;
+                const gap = 20;
+                const totalW = (curGame.controls.length - 1) * gap;
+                let startX = cx - totalW / 2;
+                
+                curGame.controls.forEach(ctrl => {
+                    drawControlIcon(startX, cy, ctrl, gc);
+                    startX += gap;
+                });
+            }
             ctx.globalAlpha = 1;
         }
     }
@@ -298,6 +328,32 @@ function renderTitle() {
         ctx.beginPath(); ctx.arc(x, y, 1.5 + Math.sin(i + t), 0, Math.PI * 2);
         ctx.fillStyle = `hsla(${(i * 23) % 360},80%,60%,0.15)`; ctx.fill();
     }
+}
+
+function drawControlIcon(x, y, type, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.0;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    const s = 5;
+    if (type === 'up') {
+        ctx.moveTo(0, s); ctx.lineTo(0, -s); // stem
+        ctx.moveTo(-3, -s+3); ctx.lineTo(0, -s); ctx.lineTo(3, -s+3); // head
+    } else if (type === 'down') {
+        ctx.moveTo(0, -s); ctx.lineTo(0, s); // stem
+        ctx.moveTo(-3, s-3); ctx.lineTo(0, s); ctx.lineTo(3, s-3); // head
+    } else if (type === 'left') {
+        ctx.moveTo(s, 0); ctx.lineTo(-s, 0); // stem
+        ctx.moveTo(-s+3, -3); ctx.lineTo(-s, 0); ctx.lineTo(-s+3, 3); // head
+    } else if (type === 'right') {
+        ctx.moveTo(-s, 0); ctx.lineTo(s, 0); // stem
+        ctx.moveTo(s-3, -3); ctx.lineTo(s, 0); ctx.lineTo(s-3, 3); // head
+    }
+    ctx.stroke();
+    ctx.restore();
 }
 
 requestAnimationFrame(loop);

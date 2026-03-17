@@ -20,15 +20,11 @@ body.dark-theme {
     color: #fff !important;
     margin: 0 !important;
     padding: 0 !important;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     /* Override shared.css flex */
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     overflow-x: hidden;
-}
-
-nav {
-    z-index: 10000 !important;
-    /* Force on top of everything */
 }
 
 #nebula-bg {

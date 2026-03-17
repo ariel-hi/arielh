@@ -2,7 +2,8 @@
   "name": "shooter_game",
   "version": "1.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "parcel watch src/index.js --dist-dir . --public-url ./"
   },
   "keywords": [],
   "author": "",

@@ -8,7 +8,7 @@ const navHTML = `
     <a href="${base}nebula.html" data-page="nebula">Nebula</a>
     <a href="${base}shooter.html" data-page="shooter">Shooter</a>
     <a href="${base}gems.html" data-page="gems">Gems</a>
-    <a href="${base}grid16/index.html" data-page="grid16">Grid16</a>
+    <a href="${base}grid16/" data-page="grid16">Grid16</a>
 `;
 
 function initNav(pageId) {
