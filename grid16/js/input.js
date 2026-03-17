@@ -28,24 +28,19 @@ export class InputManager {
       this.keys.down = false;
       this.keys.left = false;
       this.keys.right = false;
-      dpad.querySelectorAll('.dpad-btn').forEach(b => b.classList.remove('active'));
+      dpad.classList.remove('active');
+      const nub = dpad.querySelector('.dpad-center');
+      if (nub) nub.style.transform = 'translate(0, 0)';
     };
 
     const handleDpadTouch = (e) => {
-      e.preventDefault();
-      const rect = dpad.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      if (e.cancelable) e.preventDefault();
       
-      // Reset all before calculating
-      resetDpadSignals();
-
       if (e.type === 'touchend' || e.type === 'touchcancel') {
-        if (e.touches.length > 0) {
-          // If there are still touches, re-process with the first one
-          processTouch(e.touches[0]);
+        if (e.touches.length === 0) {
+          resetDpadSignals();
+          return;
         }
-        return;
       }
 
       processTouch(e.touches[0]);
@@ -59,32 +54,45 @@ export class InputManager {
       const dx = touch.clientX - centerX;
       const dy = touch.clientY - centerY;
       const dist = Math.sqrt(dx * dx + dy * dy);
+      const maxDist = rect.width / 2;
       
-      // Define a deadzone in the center
-      const deadzone = rect.width * 0.12;
-      if (dist < deadzone) return;
+      // Visual feedback: move the nub
+      const nub = dpad.querySelector('.dpad-center');
+      if (nub) {
+        const moveX = (dx / dist) * Math.min(dist, maxDist * 0.6);
+        const moveY = (dy / dist) * Math.min(dist, maxDist * 0.6);
+        nub.style.transform = `translate(${moveX}px, ${moveY}px)`;
+      }
 
-      // Calculate direction based on angle
+      // Define a deadzone
+      const deadzone = rect.width * 0.15;
+      if (dist < deadzone) {
+        this.keys.up = this.keys.down = this.keys.left = this.keys.right = false;
+        dpad.classList.remove('active');
+        return;
+      }
+
+      dpad.classList.add('active');
+
+      // Calculate direction with overlap (diagonal)
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
       
-      // Up: -135 to -45
-      // Down: 45 to 135
-      // Left: 135 to 180 or -180 to -135
-      // Right: -45 to 45
-      
-      if (angle >= -135 && angle <= -45) {
-        this.keys.up = true;
-        dpad.querySelector('.dpad-up').classList.add('active');
-      } else if (angle >= 45 && angle <= 135) {
-        this.keys.down = true;
-        dpad.querySelector('.dpad-down').classList.add('active');
-      } else if (Math.abs(angle) > 135) {
-        this.keys.left = true;
-        dpad.querySelector('.dpad-left').classList.add('active');
-      } else if (Math.abs(angle) < 45) {
-        this.keys.right = true;
-        dpad.querySelector('.dpad-right').classList.add('active');
-      }
+      // Reset keys before setting based on angle
+      this.keys.up = false;
+      this.keys.down = false;
+      this.keys.left = false;
+      this.keys.right = false;
+
+      // Use a wider arc for each direction to allow diagonals
+      // Up: -157.5 to -22.5
+      // Down: 22.5 to 157.5
+      // Left: 112.5 to 180 and -180 to -112.5
+      // Right: -67.5 to 67.5
+
+      if (angle >= -157.5 && angle <= -22.5) this.keys.up = true;
+      if (angle >= 22.5 && angle <= 157.5) this.keys.down = true;
+      if (Math.abs(angle) >= 112.5) this.keys.left = true;
+      if (Math.abs(angle) <= 67.5) this.keys.right = true;
     };
 
     dpad.addEventListener('touchstart', handleDpadTouch, { passive: false });
@@ -121,8 +129,15 @@ export class InputManager {
     });
 
     // Prevent default touch on canvas to avoid scroll
-    document.getElementById('game-canvas')?.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-    document.getElementById('game-canvas')?.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+    const canvas = document.getElementById('game-canvas');
+    if (canvas) {
+      canvas.addEventListener('touchstart', e => {
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+      canvas.addEventListener('touchmove', e => {
+        if (e.cancelable) e.preventDefault();
+      }, { passive: false });
+    }
   }
 
   _onKey(e, down) {

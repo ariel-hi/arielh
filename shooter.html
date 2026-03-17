@@ -21,11 +21,12 @@
         body {
             background-color: #050510;
             color: #fff;
-            overflow: hidden;
+            overflow-x: hidden;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
             height: 100vh;
         }
 
@@ -35,21 +36,45 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            margin-top: 72px;
-            /* Offset for nav */
+            padding: 10px;
+            margin-top: 72px; /* Offset for nav */
             z-index: 1;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        /* Fullscreen mode adjustment */
+        body.is-fullscreen .game-container {
+            margin-top: 0;
+            padding: 0;
+        }
+        
+        body.is-fullscreen nav {
+            display: none !important;
         }
 
         .game-wrapper {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 4 / 3;
             background: #000;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 0 50px rgba(74, 120, 255, 0.3), 0 0 100px rgba(102, 126, 234, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body.is-fullscreen .game-wrapper {
+            max-width: 100vw;
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+            border: none;
         }
 
         iframe {
@@ -59,11 +84,42 @@
             display: block;
         }
 
-        .game-info {
-            margin-top: 20px;
-            text-align: center;
+        .game-controls {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .fs-button {
+            background: rgba(74, 120, 255, 0.2);
+            color: #4a78ff;
+            border: 1px solid #4a78ff;
+            padding: 12px 24px;
             font-family: 'Press Start 2P', cursive;
             font-size: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            outline: none;
+        }
+
+        .fs-button:hover {
+            background: rgba(74, 120, 255, 0.4);
+            box-shadow: 0 0 15px rgba(74, 120, 255, 0.3);
+        }
+
+        .game-info {
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
             color: rgba(255, 255, 255, 0.6);
             letter-spacing: 1px;
             padding-bottom: 20px;
@@ -72,8 +128,52 @@
         .controls-hint {
             margin-top: 10px;
             font-family: var(--font-mono);
-            font-size: 12px;
+            font-size: 11px;
             color: #667eea;
+        }
+
+        /* Mobile specific portrait adjustment */
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #rotate-prompt {
+                display: flex !important;
+            }
+            .game-container {
+                display: none;
+            }
+        }
+
+        #rotate-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050510;
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            text-align: center;
+            padding: 20px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        #rotate-prompt svg {
+            width: 64px;
+            height: 64px;
+            fill: #4a78ff;
+            margin-bottom: 30px;
+            animation: rotate_msg 2s infinite ease-in-out;
+        }
+
+        @keyframes rotate_msg {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(0deg); }
         }
 
         /* Background Nebula Effect */
@@ -92,23 +192,39 @@
 <body class="dark-theme">
     <nav></nav>
 
+    <div id="rotate-prompt">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
+        </svg>
+        <p>PLEASE ROTATE DEVICE</p>
+        <p style="font-size: 10px; margin-top: 15px; color: #4a78ff;">LANDSCAPE MODE REQUIRED<br>FOR COMBAT SYSTEMS</p>
+    </div>
+
     <canvas id="nebula-bg"></canvas>
 
     <main class="game-container fade-in">
-        <div class="game-wrapper">
-            <iframe src="shooter_game/index.html"></iframe>
+        <div class="game-wrapper" id="game-wrapper">
+            <iframe id="game-iframe" src="shooter_game/index.html"></iframe>
         </div>
-        <div class="game-info">
-            <p>SPACE SHOOTER</p>
-            <p class="controls-hint">WASD to Move | Space to Shoot</p>
+        
+        <div class="game-controls">
+            <button class="fs-button" id="fullscreen-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                GO FULLSCREEN
+            </button>
+            <div class="game-info">
+                <p>SPACE SHOOTER</p>
+                <p class="controls-hint" id="plat-hint">WASD to Move | Space to Shoot</p>
+                <p class="controls-hint" style="font-size: 8px; color: #4a78ff; margin-top: 5px;">Best experienced in Fullscreen Mode</p>
+            </div>
         </div>
     </main>
 
     <!-- Leaderboard UI -->
     <div id="lb-overlay"
-        style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:900;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:opacity 0.3s;opacity:0;pointer-events:none;font-family:'Press Start 2P', monospace;">
+        style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);transition:opacity 0.3s;opacity:0;pointer-events:none;font-family:'Press Start 2P', monospace;">
         <div
-            style="background:rgba(10,10,20,0.95);border:1px solid rgba(100,120,255,0.3);padding:30px;border-radius:12px;text-align:center;width:100%;max-width:440px;color:#fff;box-shadow:0 0 30px rgba(0,0,0,0.8);">
+            style="background:rgba(10,10,20,0.95);border:1px solid rgba(100,120,255,0.3);padding:30px;border-radius:12px;text-align:center;width:90%;max-width:440px;color:#fff;box-shadow:0 0 30px rgba(0,0,0,0.8);">
             <h2 style="color:#4a78ff;margin-top:0;font-size:16px;line-height:1.4;">TRANSMISSION ENDED</h2>
             <p style="font-size:10px;color:#aaa;margin-bottom:20px;">FINAL SCORE: <span id="lb-final-score"
                     style="color:#4aff94;font-size:14px;">0</span></p>
@@ -135,12 +251,42 @@
                 style="background:transparent;color:#aaa;border:1px solid #666;padding:10px 20px;cursor:pointer;font-family:'Press Start 2P', monospace;font-size:10px;transition:all 0.2s;">DISCONNECT</button>
         </div>
     </div>
-    </main>
 
     <!-- Scripts -->
     <script src="nav.js"></script>
     <script type="module">
         initNav('shooter');
+
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const gameWrapper = document.getElementById('game-wrapper');
+        const body = document.body;
+        const platHint = document.getElementById('plat-hint');
+
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+            platHint.innerText = 'Tap anywhere to move & shoot';
+        }
+
+        fullscreenBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                gameWrapper.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+                    body.classList.add('is-fullscreen');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                body.classList.add('is-fullscreen');
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
+                }
+            } else {
+                body.classList.remove('is-fullscreen');
+            }
+        });
 
         // Starfield background
         const canvas = document.getElementById('nebula-bg');
@@ -197,7 +343,6 @@
         const lbEntry = document.getElementById('lb-entry');
 
         let currentScore = 0;
-        let lbLoaded = false;
 
         async function showLeaderboard(score) {
             currentScore = score;
@@ -215,30 +360,32 @@
 
         async function refreshLeaderboard() {
             lbList.innerHTML = '<p style="text-align:center;color:#666;margin-top:20px;">Connecting to network...</p>';
-            const scores = await fetchLeaderboard(50); // Get top 50
+            try {
+                const scores = await fetchLeaderboard(50);
+                lbList.innerHTML = '';
+                if (scores.length === 0) {
+                    lbList.innerHTML = '<p style="text-align:center;color:#666;margin-top:20px;">No records found.</p>';
+                } else {
+                    scores.forEach((s, idx) => {
+                        const r = document.createElement('div');
+                        r.style.display = 'flex';
+                        r.style.color = idx < 3 ? '#4aff94' : '#fff';
+                        r.style.marginBottom = '8px';
+                        r.style.fontSize = '10px';
 
-            lbList.innerHTML = '';
+                        const rankStr = (idx + 1).toString().padEnd(3, ' ');
+                        const nameStr = (s.name || 'ANON').substring(0, 6).padEnd(6, ' ');
 
-            if (scores.length === 0) {
-                lbList.innerHTML = '<p style="text-align:center;color:#666;margin-top:20px;">No records found.</p>';
-            } else {
-                scores.forEach((s, idx) => {
-                    // Prefix Space shooter scores if we eventually separate them, 
-                    // for now the fetch returns default grid16 table data.
-                    const r = document.createElement('div');
-                    r.style.display = 'flex';
-                    r.style.color = idx < 3 ? '#4aff94' : '#fff';
-
-                    const rankStr = (idx + 1).toString().padEnd(3, ' ');
-                    const nameStr = (s.name || 'ANON').substring(0, 6).padEnd(6, ' ');
-
-                    r.innerHTML = `
-                        <span style="display:inline-block;width:30px;opacity:0.6;">${rankStr}</span>
-                        <span style="display:inline-block;width:150px;letter-spacing:1px;">${nameStr}</span>
-                        <span style="color:#4a78ff;">${s.score}</span>
-                    `;
-                    lbList.appendChild(r);
-                });
+                        r.innerHTML = `
+                            <span style="display:inline-block;width:40px;opacity:0.6;">${rankStr}</span>
+                            <span style="display:inline-block;width:150px;letter-spacing:1px;">${nameStr}</span>
+                            <span style="color:#4a78ff;flex:1;text-align:right;">${s.score}</span>
+                        `;
+                        lbList.appendChild(r);
+                    });
+                }
+            } catch (e) {
+                lbList.innerHTML = '<p style="text-align:center;color:#ff3355;margin-top:20px;">Network error.</p>';
             }
         }
 
@@ -251,7 +398,7 @@
 
             lbSubmit.innerText = 'LOGGED';
             lbName.disabled = true;
-            document.getElementById('lb-entry').style.display = 'none'; // Hide input after submit
+            document.getElementById('lb-entry').style.display = 'none';
 
             await refreshLeaderboard();
         });
@@ -261,8 +408,7 @@
             lbOverlay.style.pointerEvents = 'none';
         });
 
-        // Intercept iframe console to detect game over accurately
-        const iframe = document.querySelector('iframe');
+        const iframe = document.getElementById('game-iframe');
         const setupIframe = () => {
             try {
                 const iframeWindow = iframe.contentWindow;
@@ -271,18 +417,15 @@
                     iframeWindow.console.log = function (...args) {
                         originalLog.apply(this, args);
                         if (args.length >= 2 && typeof args[0] === 'string' && args[0].includes('Game over! Final score:')) {
-                            const finalScore = args[1];
-                            showLeaderboard(finalScore);
+                            showLeaderboard(args[1]);
                         }
                     };
                     iframeWindow.console._intercepted = true;
                 }
-            } catch (e) { } // Cross-origin or other error safeguards
+            } catch (e) {}
         };
         iframe.addEventListener('load', setupIframe);
-        // Also fire just in case it's already loaded right now
         setupIframe();
     </script>
 </body>
-
 </html>

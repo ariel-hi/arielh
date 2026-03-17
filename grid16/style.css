@@ -52,86 +52,62 @@ body {
   width: 170px;
   height: 170px;
   pointer-events: auto;
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 50%;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: 1px solid rgba(0, 255, 170, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid rgba(0, 255, 170, 0.2);
+  box-shadow: 0 0 30px rgba(0, 255, 170, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dpad.hidden {
   display: none;
 }
 
-.dpad-btn {
+/* Diagonal area/directional indicators */
+.dpad::before {
+  content: '';
   position: absolute;
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  background: rgba(0, 255, 170, 0.08);
-  border: 2px solid rgba(0, 255, 170, 0.2);
-  color: rgba(0, 255, 170, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: none;
-  transition: all 0.1s ease;
+  inset: 15px;
+  border-radius: 50%;
+  border: 1px dashed rgba(0, 255, 170, 0.15);
+  pointer-events: none;
 }
 
-.dpad-btn svg {
-  width: 22px;
-  height: 22px;
-}
-
-.dpad-btn.active,
-.dpad-btn:active {
-  background: rgba(0, 255, 170, 0.25);
-  border-color: rgba(0, 255, 170, 0.7);
-  color: rgba(0, 255, 170, 0.9);
-}
-
-.dpad-up {
-  top: 0;
-  left: 56px;
-}
-
-.dpad-left {
-  top: 56px;
-  left: 0;
-}
-
-.dpad-right {
-  top: 56px;
-  left: 112px;
-}
-
-.dpad-down {
-  top: 112px;
-  left: 56px;
+.dpad-btn {
+  display: none; /* Hide old discrete buttons */
 }
 
 .dpad-center {
-  position: absolute;
-  top: 56px;
-  left: 56px;
-  width: 58px;
-  height: 58px;
-  border-radius: 16px;
-  background: rgba(0, 255, 170, 0.05);
-  border: 1px solid rgba(0, 255, 170, 0.15);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(0, 255, 170, 0.15);
+  border: 2px solid rgba(0, 255, 170, 0.4);
+  box-shadow: 0 0 15px rgba(0, 255, 170, 0.2), inset 0 0 10px rgba(0, 255, 170, 0.1);
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.1s ease-out, background 0.1s ease;
 }
 
 .dpad-center::after {
   content: '';
-  width: 12px;
-  height: 12px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: rgba(0, 255, 170, 0.2);
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  opacity: 0.6;
+}
+
+.dpad.active .dpad-center {
+  background: rgba(0, 255, 170, 0.3);
+  border-color: var(--accent);
 }
 
 /* Overlays */

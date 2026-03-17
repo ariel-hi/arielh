@@ -15,21 +15,24 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0; /* Remove padding for mobile fit */
             font-family: "Press Start 2P", cursive;
             display: flex;
             overflow: hidden;
-            box-sizing: border-box
+            box-sizing: border-box;
+            touch-action: none;
         }
 
         #game-container {
-            width: 100%;
-            height: 100%;
-            max-width: 800px;
-            max-height: 600px;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100%;
+            max-height: 100%;
             position: relative;
-            box-shadow: 0 0 20px #4a78ff80;
-            overflow: visible
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
         }
 
         canvas {
@@ -38,7 +41,47 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain
+            object-fit: contain; /* Maintain aspect ratio */
+            max-width: 800px;
+            max-height: 600px;
+        }
+
+        /* Mobile specific portrait adjustment */
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            #rotate-prompt {
+                display: flex !important;
+            }
+        }
+
+        #rotate-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #rotate-prompt svg {
+            width: 64px;
+            height: 64px;
+            fill: #4a78ff;
+            margin-bottom: 20px;
+            animation: rotate 2s infinite ease-in-out;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(0deg); }
         }
 
         #loading {
@@ -60,7 +103,7 @@
             color: #4a78ff;
             text-shadow: 3px 3px #000;
             margin-bottom: 40px;
-            font-size: 24px
+            font-size: 18px; /* Slightly smaller for mobile */
         }
 
         #loading-bar {
@@ -81,6 +124,11 @@
 </head>
 
 <body>
+    <div id="rotate-prompt">
+        <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        <p>Please rotate your device to landscape for the best experience</p>
+    </div>
+
     <div id="game-container">
         <div id="loading">
             <h1>SPACE SHOOTER</h1>
@@ -93,7 +141,26 @@
         preload volume="0.25"></audio> <audio id="sfx-defeat" src="Game%20Over.53031db2.mp3" preload
         volume="0.25"></audio> <audio id="sfx-upgrade" src="upgrade.b0a32e88.mp3" preload style="display:none"
         volume="0.25"></audio>
-    <script>document.addEventListener("DOMContentLoaded", () => { document.querySelectorAll("audio").forEach(e => { e.volume = .25 }); let e = document.getElementById("loading-progress"), t = document.getElementById("loading"), n = 0, d = setInterval(() => { n += 5, e.style.width = n + "%", n >= 100 && (clearInterval(d), setTimeout(() => { t.style.display = "none" }, 300)) }, 100) });</script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => { 
+            document.querySelectorAll("audio").forEach(e => { e.volume = .25 }); 
+            let e = document.getElementById("loading-progress"), t = document.getElementById("loading"), n = 0, d = setInterval(() => { n += 5, e.style.width = n + "%", n >= 100 && (clearInterval(d), setTimeout(() => { t.style.display = "none" }, 300)) }, 100);
+
+            // Attempt to lock orientation if possible
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(err => {
+                    console.log("Orientation lock not supported or failed:", err);
+                });
+            }
+
+            // Click anywhere to full screen and lock if on mobile
+            document.addEventListener('click', () => {
+                if (document.documentElement.requestFullscreen && /Mobi|Android/i.test(navigator.userAgent)) {
+                    // document.documentElement.requestFullscreen(); // Disabled for now to avoid being too intrusive unless user actions trigger it
+                }
+            }, { once: true });
+        });
+    </script>
     <script src="shooter_game.js"></script>
 </body>
 

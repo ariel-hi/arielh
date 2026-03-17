@@ -99,13 +99,24 @@ body.dark-theme nav a.active[data-page="grid16"] {
 /* Scaling Navigation for Mobile */
 @media screen and (max-width: 768px) {
     nav {
-        padding: 0.8rem 0.5rem;
+        padding: 0.8rem 1rem;
+        justify-content: flex-start;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Hide scrollbar for clean look */
+        height: 64px;
+    }
+
+    nav::-webkit-scrollbar {
+        display: none;
     }
 
     nav a {
-        font-size: 0.82rem;
-        padding: 0.5rem 0.7rem;
-        margin: 0 0.05rem;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.8rem;
+        margin: 0 0.15rem;
+        flex-shrink: 0;
         border-radius: 8px;
     }
 }
