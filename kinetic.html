@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REL — Ariel Hirschberg</title>
+    <meta name="description" content="An interactive REL visual by Ariel Hirschberg.">
+    <meta name="theme-color" content="#000000">
+    <link rel="canonical" href="https://arielh.com/kinetic.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="REL — Ariel Hirschberg">
+    <meta property="og:description" content="An interactive REL visual by Ariel Hirschberg.">
+    <meta property="og:url" content="https://arielh.com/kinetic.html">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261008">
+    <link rel="stylesheet" href="shared.css?v=20261008">
+    <link rel="stylesheet" href="nav.css?v=20261008">
+    <link rel="stylesheet" href="index.css?v=20261008">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/journey.css?v=20261008">
+    <script defer src="/journey.js?v=20261008"></script>
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="Ariel Hirschberg">
+  <meta property="og:site_name" content="Ariel Hirschberg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://arielh.com/images/social-card.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1199">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ariel Hirschberg: games, tools, and experiments">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="REL | Ariel Hirschberg">
+  <meta name="twitter:description" content="Moving, interactive type. A WebGL study by Ariel Hirschberg.">
+  <meta name="twitter:image" content="https://arielh.com/images/social-card.png">
+  <meta name="twitter:image:alt" content="Ariel Hirschberg: games, tools, and experiments">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://arielh.com/#person",
+      "name": "Ariel Hirschberg",
+      "url": "https://arielh.com/",
+      "image": "https://arielh.com/images/social-card.png",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of California, Berkeley"
+      },
+      "sameAs": [
+        "https://github.com/ariel-hi"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://arielh.com/#website",
+      "url": "https://arielh.com/",
+      "name": "Ariel Hirschberg",
+      "alternateName": "arielh.com",
+      "description": "Games, tools, and visual experiments by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://arielh.com/#person"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://arielh.com/kinetic.html#webpage",
+      "url": "https://arielh.com/kinetic.html",
+      "name": "REL | Ariel Hirschberg",
+      "description": "Moving, interactive type. A WebGL study by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://arielh.com/#website"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://arielh.com/images/social-card.png",
+        "width": 1199,
+        "height": 630
+      },
+      "mainEntity": {
+        "@type": "CreativeWork",
+        "name": "REL",
+        "description": "Moving, interactive type.",
+        "url": "https://arielh.com/kinetic.html",
+        "author": {
+          "@id": "https://arielh.com/#person"
+        },
+        "creator": {
+          "@id": "https://arielh.com/#person"
+        },
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "genre": "Interactive WebGL"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://arielh.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "REL",
+            "item": "https://arielh.com/kinetic.html"
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+  <!-- seo:end -->
+</head>
+<body class="dark-theme">
+    <nav aria-label="Main navigation"><div class="nav-container"><a class="nav-wordmark" href="index.html" aria-label="Ariel Hirschberg, home">ah<span>.</span></a><div class="nav-links"><a href="/projects.html" data-atlas-open>Index</a><a href="about.html">About</a></div></div></nav>
+    <canvas id="kineticCanvas" aria-hidden="true"></canvas>
+    <main class="experiment-info" id="main-content">
+        <div class="experiment-caption"><h1>REL</h1><p>Repeating type, sheared and scrolled in a fragment shader.</p><p class="experiment-meta">WebGL · Move to tilt, scroll to drift</p></div>
+        <p class="visually-hidden">An interactive REL visual. Move your pointer or scroll to change it.</p>
+        <p id="webglFallback" class="experiment-status" role="status" hidden></p>
+        <noscript><p class="experiment-status">This experiment needs JavaScript. You can still explore the other pages using the navigation.</p></noscript>
+    </main>
+    <script src="nav.js?v=20261008"></script>
+    <script>initNav('kinetic');</script>
+    <script src="index.js?v=20261008"></script>
+</body>
+</html>

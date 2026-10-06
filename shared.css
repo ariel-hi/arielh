@@ -1,20 +1,21 @@
+html { color-scheme: dark; }
 :root {
     /* Colors */
-    --primary-color: #667eea;
-    --primary-dark: #5a6fd6;
-    --primary-light: rgba(102, 126, 234, 0.1);
-    --secondary-color: #764ba2;
-    --accent-color: #ff6b6b;
+    --primary-color: #e8693c;
+    --primary-dark: #c95527;
+    --primary-light: rgba(232, 105, 60, 0.1);
+    --secondary-color: #95938b;
+    --accent-color: #e8693c;
 
-    --text-primary: #1a202c;
-    --text-secondary: #4a5568;
-    --text-light: #a0aec0;
+    --text-primary: #ecebe6;
+    --text-secondary: #95938b;
+    --text-light: #b8b6ae;
 
-    --bg-body: #f7fafc;
-    --bg-surface: #ffffff;
+    --bg-body: #0b0b0a;
+    --bg-surface: #131311;
 
     /* Typography */
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-sans: "Helvetica Neue", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'Space Mono', monospace;
 
     /* Spacing */
@@ -72,6 +73,21 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
+}
+
+/* Keep the site's controls usable with a keyboard and motion preferences. */
+a:focus-visible, button:focus-visible, input:focus-visible {
+    outline: 1px solid #e8693c;
+    outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 /* Utilities */

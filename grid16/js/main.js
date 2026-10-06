@@ -1,7 +1,7 @@
-import { InputManager } from './input.js';
-import { AudioEngine } from './audio.js';
-import { createAllGames, GAME_SIZE } from './microgames.js';
-import { submitScore, fetchLeaderboard } from './leaderboard.js';
+import { InputManager } from './input.js?v=20261002f';
+import { AudioEngine } from './audio.js?v=20261002g';
+import { createAllGames, GAME_SIZE } from './microgames.js?v=20261002f';
+import { submitScore, fetchLeaderboard } from './leaderboard.js?v=20261002f';
 
 const GS = GAME_SIZE, GRID = GS * 4;
 const BASE_SWITCH = 5.0, SPEED_INC = 0.03, FAIL_DUR = 0.35;
@@ -11,6 +11,7 @@ const lp = (a, b, t) => a + (b - a) * t;
 
 const canvas = document.getElementById('game-canvas');
 const ctx = canvas.getContext('2d');
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 let W = 0, H = 0;
 function resize() {
     const d = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
@@ -45,8 +46,22 @@ let state = ST.TITLE, games = [], elim = [], activeIdx = 0, nextIdx = -1;
 let clockSpd = 1, maxSpd = 1, score = 0, switchT = 0, transT = 0;
 let shake = 0, flash = 0, scanY = 0, gamesLostCount = 0;
 let expandT = 0, expandIdx = 0;
+let runId = 0, scoreSubmitted = false;
+const boardRequests = new WeakMap();
+
+function describeActiveGame() {
+    const game = games[activeIdx];
+    if (!game) return;
+    const controls = game.controls?.length ? ` Controls: ${game.controls.join(', ')}.` : '';
+    document.getElementById('game-status').textContent = `${game.name}. ${game.hint}.${controls}`;
+}
 
 function start() {
+    runId++;
+    scoreSubmitted = false;
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-btn').textContent = 'SUBMIT';
+    document.getElementById('player-name').disabled = false;
     games = createAllGames(16); elim = new Array(16).fill(false);
     clockSpd = 1; maxSpd = 1; score = 0; switchT = BASE_SWITCH;
     shake = 0; flash = 0; gamesLostCount = 0; expandT = 0;
@@ -54,6 +69,9 @@ function start() {
     state = ST.STARTING; transT = 0; audio.init(); audio.resume();
     document.getElementById('lb-results').classList.add('hidden');
     document.getElementById('name-entry').style.display = 'flex';
+    input.reset();
+    describeActiveGame();
+    canvas.focus({ preventScroll: true });
 }
 
 function remain() { return elim.filter(e => !e).length; }
@@ -72,29 +90,112 @@ async function gameOver() {
 }
 
 function renderBoard(rows, c) {
-    if (!rows.length) { c.innerHTML = '<div class="lb-empty">No scores yet — be first!</div>'; return; }
-    c.innerHTML = rows.slice(0, 10).map((r, i) => `<div class="lb-row"><span class="lb-rank">${i + 1}</span><span class="lb-name">${(r.name || 'ANON').slice(0, 12)}</span><span class="lb-score">${Number(r.score).toFixed(1)}s</span></div>`).join('');
+    c.replaceChildren();
+    if (!rows.length) { renderBoardMessage(c, 'No scores yet — be first!'); return; }
+    rows.slice(0, 10).forEach((record, index) => {
+        const row = document.createElement('div');
+        row.className = 'lb-row';
+        const values = [
+            ['lb-rank', String(index + 1)],
+            ['lb-name', String(record.name || 'ANON').slice(0, 12)],
+            ['lb-score', `${Number(record.score).toFixed(1)}s`],
+        ];
+        values.forEach(([className, text]) => {
+            const cell = document.createElement('span');
+            cell.className = className;
+            cell.textContent = text;
+            row.appendChild(cell);
+        });
+        c.appendChild(row);
+    });
+}
+
+function renderBoardMessage(container, message, retry) {
+    const status = document.createElement('div');
+    status.className = 'lb-empty';
+    status.setAttribute('role', 'status');
+    status.textContent = message;
+    container.replaceChildren(status);
+    if (retry) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'neon-btn secondary';
+        button.textContent = 'TRY AGAIN';
+        button.onclick = () => { button.disabled = true; retry(); };
+        container.appendChild(button);
+    }
+}
+
+async function loadBoard(container, saved = false, currentRun = runId) {
+    const requestId = (boardRequests.get(container) || 0) + 1;
+    boardRequests.set(container, requestId);
+    renderBoardMessage(container, saved ? 'Score saved. Loading scores…' : 'Loading scores…');
+    try {
+        const rows = await fetchLeaderboard(10);
+        if (currentRun !== runId || boardRequests.get(container) !== requestId) return;
+        renderBoard(rows, container);
+    } catch {
+        if (currentRun !== runId || boardRequests.get(container) !== requestId) return;
+        renderBoardMessage(container,
+            saved ? 'Score saved, but the leaderboard could not load.' : 'The leaderboard could not load.',
+            () => loadBoard(container, saved, currentRun));
+    }
 }
 
 document.getElementById('start-btn').onclick = () => { document.getElementById('title-screen').classList.add('hidden'); start(); };
 document.getElementById('restart-btn').onclick = () => { document.getElementById('gameover-screen').classList.add('hidden'); start(); };
 document.getElementById('submit-btn').onclick = async () => {
-    const name = (document.getElementById('player-name').value || 'ANON').trim().toUpperCase();
-    document.getElementById('name-entry').style.display = 'none';
-    await submitScore({ name, score, maxSpeed: maxSpd, gamesLost: gamesLostCount });
-    const rows = await fetchLeaderboard(10); const lb = document.getElementById('lb-results');
-    renderBoard(rows, lb); lb.classList.remove('hidden');
+    const button = document.getElementById('submit-btn');
+    const nameInput = document.getElementById('player-name');
+    const lb = document.getElementById('lb-results');
+    if (button.disabled || scoreSubmitted || state !== ST.OVER) return;
+    const name = nameInput.value.trim() || 'ANON';
+    const currentRun = runId;
+    const finalScore = score;
+    button.disabled = true;
+    button.textContent = 'SAVING…';
+    nameInput.disabled = true;
+    lb.classList.remove('hidden');
+    renderBoardMessage(lb, 'Saving your score…');
+    try {
+        await submitScore({ name, score: finalScore });
+        if (currentRun !== runId) return;
+        scoreSubmitted = true;
+        button.textContent = 'SAVED';
+        document.getElementById('name-entry').style.display = 'none';
+        document.getElementById('restart-btn').focus({ preventScroll: true });
+        await loadBoard(lb, true, currentRun);
+    } catch {
+        if (currentRun !== runId) return;
+        renderBoardMessage(lb, 'Could not confirm your score was saved. Your name and score are still here. Try again.');
+        button.textContent = 'TRY AGAIN';
+    } finally {
+        if (currentRun === runId && !scoreSubmitted) {
+            button.disabled = false;
+            nameInput.disabled = false;
+        }
+    }
 };
 document.getElementById('board-btn').onclick = async () => {
     document.getElementById('title-screen').classList.add('hidden');
     document.getElementById('board-screen').classList.remove('hidden');
-    renderBoard(await fetchLeaderboard(10), document.getElementById('board-list'));
+    const backButton = document.getElementById('board-close');
+    backButton.focus();
+    await loadBoard(document.getElementById('board-list'));
+    if (document.activeElement === backButton) backButton.scrollIntoView({ block: 'nearest' });
 };
 document.getElementById('board-close').onclick = () => {
     document.getElementById('board-screen').classList.add('hidden');
     document.getElementById('title-screen').classList.remove('hidden');
+    document.getElementById('board-btn').focus({ preventScroll: true });
 };
-canvas.onclick = () => { if (state === ST.TITLE) { document.getElementById('title-screen').classList.add('hidden'); start(); } };
+canvas.onclick = () => {
+    const title = document.getElementById('title-screen');
+    if (state === ST.TITLE && !title.classList.contains('hidden')) {
+        title.classList.add('hidden');
+        start();
+    }
+};
 
 let lastT = 0;
 function loop(ts) { requestAnimationFrame(loop); const dt = Math.min((ts - lastT) / 1000, 0.05); lastT = ts; update(dt); render(dt); }
@@ -139,7 +240,7 @@ function update(dt) {
     if (state === ST.FAILING) { transT += dt; if (transT >= FAIL_DUR) { transT = 0; state = ST.SWITCHING; } }
     if (state === ST.SWITCHING) {
         transT += dt;
-        if (transT >= SW_TOTAL) { activeIdx = nextIdx; switchT = BASE_SWITCH / clockSpd; clockSpd += SPEED_INC; maxSpd = Math.max(maxSpd, clockSpd); state = ST.ACTIVE; }
+        if (transT >= SW_TOTAL) { activeIdx = nextIdx; switchT = BASE_SWITCH / clockSpd; clockSpd += SPEED_INC; maxSpd = Math.max(maxSpd, clockSpd); state = ST.ACTIVE; describeActiveGame(); }
     }
 }
 
@@ -171,7 +272,7 @@ function render(dt) {
     if (state === ST.TITLE) { renderTitle(); return; }
 
     ctx.save();
-    if (shake > 0.1) ctx.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
+    if (!motionPreference.matches && shake > 0.1) ctx.translate((Math.random() - .5) * shake, (Math.random() - .5) * shake);
 
     const { gs, x: gx, y: gy } = getGrid();
     const exp = getExpand();
@@ -316,13 +417,14 @@ function render(dt) {
     }
 
     // Scanlines
-    scanY += dt * 80; if (scanY > H) scanY = 0;
+    if (!motionPreference.matches) { scanY += dt * 80; if (scanY > H) scanY = 0; }
+    const scanOffset = motionPreference.matches ? 0 : scanY % 4;
     ctx.fillStyle = 'rgba(255,255,255,0.009)';
-    for (let y = scanY % 4; y < H; y += 4) ctx.fillRect(0, y, W, 1);
+    for (let y = scanOffset; y < H; y += 4) ctx.fillRect(0, y, W, 1);
 }
 
 function renderTitle() {
-    const t = performance.now() / 1000;
+    const t = motionPreference.matches ? 0 : performance.now() / 1000;
     for (let i = 0; i < 30; i++) {
         const x = ((Math.sin(i * 1.7 + t * .3) + 1) / 2) * W, y = ((Math.cos(i * 2.3 + t * .2) + 1) / 2) * H;
         ctx.beginPath(); ctx.arc(x, y, 1.5 + Math.sin(i + t), 0, Math.PI * 2);
@@ -357,3 +459,4 @@ function drawControlIcon(x, y, type, color) {
 }
 
 requestAnimationFrame(loop);
+window.grid16Boot?.ready();

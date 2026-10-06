@@ -1,0 +1,13 @@
+{
+  "name": "arielh",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Ariel Hirschberg's personal site, games, and project directory",
+  "scripts": {
+    "build": "node scripts/build-pages.js",
+    "check": "python scripts/check-site.py",
+    "test:analytics": "node scripts/test-analytics.mjs",
+    "package": "python scripts/package-release.py",
+    "indexnow": "python scripts/indexnow.py"
+  }
+}

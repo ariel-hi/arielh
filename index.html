@@ -1,34 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Home | Ariel H</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap"
-        rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="shared.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="index.css">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ariel Hirschberg</title>
+    <meta name="description" content="Ariel Hirschberg's website. Games, tools, and visual experiments." />
+    <meta name="theme-color" content="#0b0b0a" />
+    <link rel="canonical" href="https://arielh.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Ariel Hirschberg" />
+    <meta property="og:description" content="Games, tools, and visual experiments by Ariel Hirschberg." />
+    <meta property="og:url" content="https://arielh.com/" />
+    <link rel="icon" href="favicon.svg?v=20261008" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="home.css?v=20261008" />
+    <script defer src="index.js?v=20261008"></script>
+    <link rel="stylesheet" href="journey.css?v=20261008">
+    <script defer src="journey.js?v=20261008"></script>
+    <script defer src="analytics/analytics.js?v=20261008"></script>
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="Ariel Hirschberg">
+  <meta property="og:site_name" content="Ariel Hirschberg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://arielh.com/images/social-card.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1199">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ariel Hirschberg: games, tools, and experiments">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ariel Hirschberg">
+  <meta name="twitter:description" content="Games, tools, and visual experiments by Ariel Hirschberg.">
+  <meta name="twitter:image" content="https://arielh.com/images/social-card.png">
+  <meta name="twitter:image:alt" content="Ariel Hirschberg: games, tools, and experiments">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://arielh.com/#person",
+      "name": "Ariel Hirschberg",
+      "url": "https://arielh.com/",
+      "image": "https://arielh.com/images/social-card.png",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of California, Berkeley"
+      },
+      "sameAs": [
+        "https://github.com/ariel-hi"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://arielh.com/#website",
+      "url": "https://arielh.com/",
+      "name": "Ariel Hirschberg",
+      "alternateName": "arielh.com",
+      "description": "Games, tools, and visual experiments by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://arielh.com/#person"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://arielh.com/#webpage",
+      "url": "https://arielh.com/",
+      "name": "Ariel Hirschberg",
+      "description": "Games, tools, and visual experiments by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://arielh.com/#website"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://arielh.com/images/social-card.png",
+        "width": 1199,
+        "height": 630
+      }
+    }
+  ]
+}
+</script>
+  <!-- seo:end -->
 </head>
-
-<body class="dark-theme">
-    <nav></nav>
-
-    <canvas id="kineticCanvas"></canvas>
-
-    <!-- Scripts -->
-    <script src="nav.js"></script>
-    <script>initNav('index');</script>
-    <script src="index.js"></script>
-</body>
-
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="home-header">
+      <a class="home-wordmark" href="/" aria-label="Ariel Hirschberg, home">ah<span>.</span></a>
+      <nav class="home-nav" aria-label="Main navigation">
+        <a href="projects.html" data-atlas-open>Index</a>
+        <a href="about.html">About</a>
+      </nav>
+    </header>
+    <main id="main" tabindex="-1">
+    <section class="home-visual" aria-label="REL" data-project="kinetic">
+      <h1 class="visually-hidden">Ariel Hirschberg</h1>
+      <p class="visually-hidden">An interactive REL visual. Move your pointer or scroll to change it.</p>
+      <div class="home-static" aria-hidden="true">REL</div>
+      <canvas id="kineticCanvas" aria-hidden="true"></canvas>
+      <p id="webglFallback" class="visual-status" role="status" hidden></p>
+      <noscript><p class="visual-status">This visual needs JavaScript. You can still open Projects or About.</p></noscript>
+      <div class="hero-bottom"><a class="scroll-cue" href="#projects"><span class="scroll-line" aria-hidden="true"></span>Work</a></div>
+    </section>
+    <div id="projects" aria-label="Projects">
+    <h2 class="visually-hidden">Projects</h2>
+    <!-- showcase:start -->
+<section class="project-scene" id="word-king" aria-label="Word King">
+  <a class="scene-link" href="https://wordking.web.app/" data-project="word-king">
+    <div class="scene-art"><img class="scene-image" src="images/project-word-king.webp" width="1280" height="720" alt="Word King preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">01</span> Word game</span><h2 class="scene-name">Word King</h2><p class="scene-description">Daily and multiplayer word games.</p><span class="scene-destination">Visit wordking.web.app</span></div>
+  </a>
+</section>
+<section class="project-scene" id="copysprig" aria-label="CopySprig">
+  <a class="scene-link" href="https://copysprig.web.app/" data-project="copysprig">
+    <div class="scene-art"><picture class="scene-picture"><source media="(max-width: 600px)" srcset="images/project-copysprig-mobile.webp"><img class="scene-image" src="images/project-copysprig.webp" width="1280" height="720" alt="CopySprig preview" loading="lazy" decoding="async"></picture></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">02</span> Text tools</span><h2 class="scene-name">CopySprig</h2><p class="scene-description">Unicode lettering and copyable symbols.</p><span class="scene-destination">Visit copysprig.web.app</span></div>
+  </a>
+</section>
+<section class="project-scene" id="worldbreaker" aria-label="Worldbreaker">
+  <a class="scene-link" href="https://worldbreaker.web.app/" data-project="worldbreaker">
+    <div class="scene-art"><img class="scene-image" src="images/project-worldbreaker.webp" width="1280" height="720" alt="Worldbreaker preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">03</span> Planet sandbox</span><h2 class="scene-name">Worldbreaker</h2><p class="scene-description">Procedural planet destruction.</p><span class="scene-destination">Visit worldbreaker.web.app</span></div>
+  </a>
+</section>
+<section class="project-scene" id="who-goes-first" aria-label="Who Goes First?">
+  <a class="scene-link" href="https://whogoesfirst.fun/" data-project="who-goes-first">
+    <div class="scene-art"><img class="scene-image" src="images/project-who-goes-first.webp" width="1280" height="720" alt="Who Goes First? preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">04</span> Game-night tools</span><h2 class="scene-name">Who Goes First?</h2><p class="scene-description">First-player picker and board-game starting rules.</p><span class="scene-destination">Visit whogoesfirst.fun</span></div>
+  </a>
+</section>
+<section class="project-scene" id="comprehend" aria-label="Comprehend">
+  <a class="scene-link" href="https://ariel-hi.github.io/comprehend/" data-project="comprehend">
+    <div class="scene-art"><img class="scene-image" src="images/project-comprehend.webp" width="1280" height="720" alt="Comprehend preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">05</span> Daily puzzle + player</span><h2 class="scene-name">Comprehend</h2><p class="scene-description">Daily line puzzles and an unofficial Understand player.</p><span class="scene-destination">Visit ariel-hi.github.io</span></div>
+  </a>
+</section>
+<section class="project-scene" id="grid16" aria-label="Grid16">
+  <a class="scene-link" href="/grid16/" data-project="grid16">
+    <div class="scene-art"><img class="scene-image" src="images/project-grid16.webp" width="1280" height="720" alt="Grid16 preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">06</span> Arcade</span><h2 class="scene-name">Grid16</h2><p class="scene-description">Sixteen microgames, one set of controls.</p><span class="scene-destination">Open</span></div>
+  </a>
+</section>
+<section class="project-scene" id="space-shooter" aria-label="Space Shooter">
+  <a class="scene-link" href="/shooter.html" data-project="space-shooter">
+    <div class="scene-art"><img class="scene-image" src="images/project-space-shooter.webp" width="1280" height="720" alt="Space Shooter preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">07</span> Arcade</span><h2 class="scene-name">Space Shooter</h2><p class="scene-description">Dodge asteroids and build a high score.</p><span class="scene-destination">Open</span></div>
+  </a>
+</section>
+<section class="project-scene" id="horizon" aria-label="Horizon">
+  <a class="scene-link" href="/horizon.html" data-project="horizon">
+    <div class="scene-art"><img class="scene-image" src="images/project-horizon.webp" width="1280" height="720" alt="Horizon preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">08</span> WebGL study</span><h2 class="scene-name">Horizon</h2><p class="scene-description">A WebGL black hole.</p><span class="scene-destination">Open</span></div>
+  </a>
+</section>
+<section class="project-scene" id="nebula" aria-label="Nebula">
+  <a class="scene-link" href="/nebula.html" data-project="nebula">
+    <div class="scene-art"><img class="scene-image" src="images/project-nebula.webp" width="1280" height="720" alt="Nebula preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">09</span> WebGL study</span><h2 class="scene-name">Nebula</h2><p class="scene-description">Procedural clouds and color.</p><span class="scene-destination">Open</span></div>
+  </a>
+</section>
+<section class="project-scene" id="rufus" aria-label="Rufus">
+  <a class="scene-link" href="/rufus.html" data-project="rufus">
+    <div class="scene-art"><img class="scene-image" src="images/rufus-04.webp" width="1280" height="720" alt="Rufus preview" loading="lazy" decoding="async"></div>
+    <div class="scene-caption"><span class="scene-number"><span class="scene-index">10</span> Photo gallery</span><h2 class="scene-name">Rufus</h2><p class="scene-description">Photos of Rufus.</p><span class="scene-destination">Open</span></div>
+  </a>
+</section>
+<!-- showcase:end -->
+    </div>
+    </main>
+    <footer class="home-footer"><span class="home-footer-name">Ariel Hirschberg © 2026</span><a href="projects.html">Index</a><a href="about.html">About</a><a href="https://github.com/ariel-hi">GitHub</a><a href="privacy.html">Privacy</a></footer>
+  </body>
 </html>

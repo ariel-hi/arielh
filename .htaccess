@@ -1,0 +1,44 @@
+Options -Indexes
+ErrorDocument 404 /404.html
+<IfModule mod_deflate.c>
+  <IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE text/css text/javascript application/javascript image/svg+xml
+  </IfModule>
+</IfModule>
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_HOST} ^(?:www\.)?arielh\.com$ [NC]
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://arielh.com%{REQUEST_URI} [R=301,L]
+  RewriteCond %{HTTP_HOST} ^www\.arielh\.com$ [NC]
+  RewriteRule ^ https://arielh.com%{REQUEST_URI} [R=301,L]
+  # One canonical URL per page: /index.html -> / and /grid16/index.html -> /grid16/.
+  RewriteCond %{THE_REQUEST} \s/((?:[^\s?]*/)?)index\.html[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L]
+  # Star Cluster Blitz was retired; send old links to the project index.
+  RewriteRule ^gems\.(?:html|css|js)$ /projects.html [R=301,L]
+  RewriteRule ^(?:\.git|\.analytics-private|\.leaderboards-private|\.verification|\.release|scripts)(?:/|$) - [F,L]
+</IfModule>
+<FilesMatch "^(?:\..*|package(?:-lock)?\.json|README\.md|AGENTS\.md|projects-data\.js)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  # Keep private endpoints out of search results even when linked from elsewhere.
+  <If "%{REQUEST_URI} =~ m#^/(?:analytics|api|shooter_game)/#">
+    Header always set X-Robots-Tag "noindex, nofollow"
+  </If>
+  <FilesMatch "\.(?:html|css|js)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(?:svg|webp|png|jpg|woff2)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType image/webp .webp
+</IfModule>

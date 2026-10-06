@@ -1,39 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Horizon | Ariel H</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="shared.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="horizon.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizon — Ariel Hirschberg</title>
+    <meta name="description" content="A black hole, an accretion disk, and a little bending of light. Explore Horizon, an interactive WebGL experiment by Ariel Hirschberg.">
+    <meta name="theme-color" content="#000000">
+    <link rel="canonical" href="https://arielh.com/horizon.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Horizon — Ariel Hirschberg">
+    <meta property="og:description" content="A black hole, an accretion disk, and a little bending of light.">
+    <meta property="og:url" content="https://arielh.com/horizon.html">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261008">
+    <link rel="stylesheet" href="shared.css?v=20261008">
+    <link rel="stylesheet" href="nav.css?v=20261008">
+    <link rel="stylesheet" href="horizon.css?v=20261008">
+    <link rel="stylesheet" href="/journey.css?v=20261008">
+    <script defer src="/journey.js?v=20261008"></script>
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="Ariel Hirschberg">
+  <meta property="og:site_name" content="Ariel Hirschberg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://arielh.com/images/project-horizon.webp">
+  <meta property="og:image:type" content="image/webp">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="648">
+  <meta property="og:image:alt" content="Horizon: a rendered black hole with a glowing accretion disk">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Horizon | Ariel Hirschberg">
+  <meta name="twitter:description" content="A black hole, an accretion disk, and a little bending of light. An interactive WebGL experiment.">
+  <meta name="twitter:image" content="https://arielh.com/images/project-horizon.webp">
+  <meta name="twitter:image:alt" content="Horizon: a rendered black hole with a glowing accretion disk">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://arielh.com/#person",
+      "name": "Ariel Hirschberg",
+      "url": "https://arielh.com/",
+      "image": "https://arielh.com/images/social-card.png",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of California, Berkeley"
+      },
+      "sameAs": [
+        "https://github.com/ariel-hi"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://arielh.com/#website",
+      "url": "https://arielh.com/",
+      "name": "Ariel Hirschberg",
+      "alternateName": "arielh.com",
+      "description": "Games, tools, and visual experiments by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://arielh.com/#person"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://arielh.com/horizon.html#webpage",
+      "url": "https://arielh.com/horizon.html",
+      "name": "Horizon | Ariel Hirschberg",
+      "description": "A black hole, an accretion disk, and a little bending of light. An interactive WebGL experiment.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://arielh.com/#website"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://arielh.com/images/project-horizon.webp",
+        "width": 1280,
+        "height": 648
+      },
+      "mainEntity": {
+        "@type": "CreativeWork",
+        "name": "Horizon",
+        "description": "A WebGL black hole.",
+        "url": "https://arielh.com/horizon.html",
+        "author": {
+          "@id": "https://arielh.com/#person"
+        },
+        "creator": {
+          "@id": "https://arielh.com/#person"
+        },
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "codeRepository": "https://github.com/ariel-hi/arielh/blob/main/horizon.js",
+        "genre": "Interactive WebGL"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://arielh.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Horizon",
+            "item": "https://arielh.com/horizon.html"
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+  <!-- seo:end -->
 </head>
-
-<body class="dark-theme" style="margin: 0; padding: 0; overflow: hidden; background: #000;">
-    <nav></nav>
-
-    <canvas id="glCanvas" style="display: block; width: 100vw; height: 100vh;"></canvas>
-
-    <div class="info"
-        style="position: fixed; bottom: 20px; left: 20px; color: rgba(255,255,255,0.5); font-family: 'Space Mono', monospace; font-size: 12px; pointer-events: none;">
-        <p>Singularity Simulation // WebGL 2.0</p>
-    </div>
-
-    <!-- Scripts -->
-    <script src="nav.js"></script>
+<body class="dark-theme">
+    <nav aria-label="Main navigation"><div class="nav-container"><a class="nav-wordmark" href="index.html" aria-label="Ariel Hirschberg, home">ah<span>.</span></a><div class="nav-links"><a href="/projects.html" data-atlas-open>Index</a><a href="about.html">About</a></div></div></nav>
+    <img class="visual-poster" src="images/project-horizon.webp" alt="" aria-hidden="true">
+    <canvas id="glCanvas" aria-hidden="true"></canvas>
+    <main class="experiment-info" id="main-content">
+        <div class="experiment-caption"><h1>Horizon</h1><p>A ray-traced black hole. Light from the far side of the disk bends over and under the shadow.</p><p class="experiment-meta">Move to orbit · Scroll to zoom</p></div>
+        <p class="visually-hidden">A black hole, an accretion disk, and a little bending of light. Move your pointer to change the view.</p>
+        <p id="webglFallback" class="experiment-status" role="status" hidden></p>
+        <noscript><p class="experiment-status">This experiment needs JavaScript. You can still explore the other pages using the navigation.</p></noscript>
+    </main>
+    <script src="nav.js?v=20261008"></script>
     <script>initNav('horizon');</script>
-    <script src="horizon.js"></script>
+    <script src="horizon.js?v=20261008"></script>
 </body>
-
 </html>

@@ -1,38 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Nebula | Ariel H</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400&display=swap"
-        rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="shared.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="nebula.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula — Ariel Hirschberg</title>
+    <meta name="description" content="A slowly shifting cloud of color, made from layers of noise. Explore Nebula, an interactive WebGL experiment by Ariel Hirschberg.">
+    <meta name="theme-color" content="#05090f">
+    <link rel="canonical" href="https://arielh.com/nebula.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Nebula — Ariel Hirschberg">
+    <meta property="og:description" content="A slowly shifting cloud of color, made from layers of noise.">
+    <meta property="og:url" content="https://arielh.com/nebula.html">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261008">
+    <link rel="stylesheet" href="shared.css?v=20261008">
+    <link rel="stylesheet" href="nav.css?v=20261008">
+    <link rel="stylesheet" href="nebula.css?v=20261008">
+    <link rel="stylesheet" href="/journey.css?v=20261008">
+    <script defer src="/journey.js?v=20261008"></script>
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="Ariel Hirschberg">
+  <meta property="og:site_name" content="Ariel Hirschberg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://arielh.com/images/project-nebula.webp">
+  <meta property="og:image:type" content="image/webp">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="648">
+  <meta property="og:image:alt" content="Nebula: layered clouds of color">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nebula | Ariel Hirschberg">
+  <meta name="twitter:description" content="A slowly shifting cloud of color, made from layers of noise. An interactive WebGL experiment.">
+  <meta name="twitter:image" content="https://arielh.com/images/project-nebula.webp">
+  <meta name="twitter:image:alt" content="Nebula: layered clouds of color">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://arielh.com/#person",
+      "name": "Ariel Hirschberg",
+      "url": "https://arielh.com/",
+      "image": "https://arielh.com/images/social-card.png",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of California, Berkeley"
+      },
+      "sameAs": [
+        "https://github.com/ariel-hi"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://arielh.com/#website",
+      "url": "https://arielh.com/",
+      "name": "Ariel Hirschberg",
+      "alternateName": "arielh.com",
+      "description": "Games, tools, and visual experiments by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://arielh.com/#person"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://arielh.com/nebula.html#webpage",
+      "url": "https://arielh.com/nebula.html",
+      "name": "Nebula | Ariel Hirschberg",
+      "description": "A slowly shifting cloud of color, made from layers of noise. An interactive WebGL experiment.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://arielh.com/#website"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://arielh.com/images/project-nebula.webp",
+        "width": 1280,
+        "height": 648
+      },
+      "mainEntity": {
+        "@type": "CreativeWork",
+        "name": "Nebula",
+        "description": "Procedural clouds and color.",
+        "url": "https://arielh.com/nebula.html",
+        "author": {
+          "@id": "https://arielh.com/#person"
+        },
+        "creator": {
+          "@id": "https://arielh.com/#person"
+        },
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "codeRepository": "https://github.com/ariel-hi/arielh/blob/main/nebula.js",
+        "genre": "Interactive WebGL"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://arielh.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Nebula",
+            "item": "https://arielh.com/nebula.html"
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+  <!-- seo:end -->
 </head>
-
 <body class="dark-theme">
-    <nav></nav>
-
-    <canvas id="glcanvas"></canvas>
-
-    <div class="overlay fade-in">
-        <h1>Nebula</h1>
-        <p>Procedural Cosmic Nebula // WebGL 2.0</p>
-    </div>
-
-    <!-- Scripts -->
-    <script src="nav.js"></script>
+    <nav aria-label="Main navigation"><div class="nav-container"><a class="nav-wordmark" href="index.html" aria-label="Ariel Hirschberg, home">ah<span>.</span></a><div class="nav-links"><a href="/projects.html" data-atlas-open>Index</a><a href="about.html">About</a></div></div></nav>
+    <img class="visual-poster" src="images/project-nebula.webp" alt="" aria-hidden="true">
+    <canvas id="glcanvas" aria-hidden="true"></canvas>
+    <main class="experiment-info" id="main-content">
+        <div class="experiment-caption"><h1>Nebula</h1><p>Hydrogen, oxygen and sulphur light, cut by dust lanes and lit by a young cluster at the core.</p><p class="experiment-meta">Move to look around</p></div>
+        <p class="visually-hidden">A slowly shifting cloud of color, made from layers of noise. Move your pointer to stir it.</p>
+        <p id="webglFallback" class="experiment-status" role="status" hidden></p>
+        <noscript><p class="experiment-status">This experiment needs JavaScript. You can still explore the other pages using the navigation.</p></noscript>
+    </main>
+    <script src="nav.js?v=20261008"></script>
     <script>initNav('nebula');</script>
-    <script src="nebula.js"></script>
+    <script src="nebula.js?v=20261008"></script>
 </body>
-
 </html>

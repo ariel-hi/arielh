@@ -3,11 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <title>GRID16 — Dev Test</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <title>GRID16 — Developer Suite</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="../shared.css">
+    <link rel="stylesheet" href="./style.css">
     <style>
         * {
             margin: 0;
@@ -17,14 +19,12 @@
 
         html,
         body {
-            background: #0a0a0a;
+            background: #05050a;
             color: #e0e0e0;
             font-family: 'Share Tech Mono', monospace;
             overflow: hidden;
             height: 100%;
             touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
         }
 
         #bar {
@@ -32,46 +32,61 @@
             top: 0;
             left: 0;
             right: 0;
-            z-index: 100;
+            z-index: 200;
             display: flex;
-            gap: 8px;
+            gap: 12px;
             align-items: center;
-            padding: 8px 12px;
-            background: #0a0a0aee;
-            border-bottom: 1px solid #ffffff12;
+            padding: 12px 20px;
+            background: rgba(10, 10, 20, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 170, 0.2);
+            flex-wrap: wrap;
+        }
+
+        .dev-tool {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         select,
-        button {
-            background: #1a1a2e;
+        button.dev-btn {
+            background: rgba(0, 255, 170, 0.05);
             color: #00ffaa;
-            border: 1px solid #00ffaa40;
-            padding: 5px 10px;
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            padding: 6px 12px;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
-            border-radius: 4px;
+            font-size: 13px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
         }
 
-        button:hover {
-            background: #00ffaa20;
+        select:focus,
+        button.dev-btn:hover {
+            background: rgba(0, 255, 170, 0.15);
+            border-color: #00ffaa;
+            box-shadow: 0 0 10px rgba(0, 255, 170, 0.2);
         }
 
         #spd-val {
             color: #00ffaa;
-            font-size: 12px;
-            min-width: 36px;
+            font-size: 13px;
+            min-width: 45px;
+            font-weight: bold;
         }
 
         input[type=range] {
             accent-color: #00ffaa;
-            width: 100px;
+            width: 80px;
         }
 
         #status {
             color: #ff3366;
-            font-size: 12px;
-            margin-left: auto;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         canvas {
@@ -79,114 +94,145 @@
             position: fixed;
             top: 0;
             left: 0;
+            z-index: 10;
         }
 
-        #dpad {
+        /* Mobile specific swapping controls */
+        .mobile-swap {
+            display: none;
             position: fixed;
-            z-index: 50;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 160px;
-            height: 160px;
+            top: 50%;
+            left: 0;
+            right: 0;
+            transform: translateY(-50%);
+            padding: 0 15px;
+            pointer-events: none;
+            z-index: 150;
+            justify-content: space-between;
         }
 
-        .dpad-btn {
-            position: absolute;
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            background: rgba(0, 255, 170, 0.08);
-            border: 1.5px solid rgba(0, 255, 170, 0.25);
-            color: rgba(0, 255, 170, 0.55);
+        .swap-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(0, 255, 170, 0.1);
+            border: 1px solid rgba(0, 255, 170, 0.3);
+            border-radius: 50%;
+            color: #00ffaa;
             display: flex;
             align-items: center;
             justify-content: center;
-            touch-action: none;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
         }
 
-        .dpad-btn svg {
-            width: 22px;
-            height: 22px;
+        .swap-btn:active {
+            background: rgba(0, 255, 170, 0.3);
+            transform: scale(0.9);
         }
 
-        .dpad-btn.active {
-            background: rgba(0, 255, 170, 0.25);
-            border-color: rgba(0, 255, 170, 0.7);
-            color: rgba(0, 255, 170, 0.9);
-        }
-
-        .dpad-up {
-            top: 0;
-            left: 53px;
-        }
-
-        .dpad-left {
-            top: 53px;
-            left: 0;
-        }
-
-        .dpad-right {
-            top: 53px;
-            left: 106px;
-        }
-
-        .dpad-down {
-            top: 106px;
-            left: 53px;
+        @media screen and (max-width: 768px) {
+            .mobile-swap {
+                display: flex;
+            }
+            #bar {
+                padding: 10px;
+                gap: 8px;
+            }
+            .hint-text {
+                display: none;
+            }
         }
     </style>
 </head>
 
 <body>
     <div id="bar">
-        <select id="sel"></select>
-        <span style="opacity: 0.5; margin-right: 8px; font-size: 10px;">[ , / . to switch ]</span>
-        <span>Speed:</span>
-        <input type="range" id="spd" min="0.5" max="5" step="0.1" value="1">
-        <span id="spd-val">1.0×</span>
-        <span id="status"></span>
+        <div class="dev-tool">
+            <select id="sel"></select>
+        </div>
+        
+        <div class="dev-tool">
+            <span style="font-size: 11px; opacity: 0.6;">SPEED</span>
+            <input type="range" id="spd" min="0.5" max="5" step="0.1" value="1">
+            <span id="spd-val">1.0×</span>
+        </div>
+
+        <div class="dev-tool hint-text">
+            <span style="opacity: 0.5; font-size: 11px;">[ , / . to switch ]</span>
+        </div>
+
+        <div id="status"></div>
     </div>
+
+    <!-- Mobile Swap overlay -->
+    <div class="mobile-swap">
+        <button id="prev-btn" class="swap-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button id="next-btn" class="swap-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+    </div>
+
     <canvas id="game-canvas"></canvas>
-    <div id="dpad">
-        <div class="dpad-btn dpad-up" data-dir="up"><svg viewBox="0 0 40 40">
-                <polygon points="20,8 32,28 8,28" fill="currentColor" />
-            </svg></div>
-        <div class="dpad-btn dpad-left" data-dir="left"><svg viewBox="0 0 40 40">
-                <polygon points="8,20 28,8 28,32" fill="currentColor" />
-            </svg></div>
-        <div class="dpad-btn dpad-right" data-dir="right"><svg viewBox="0 0 40 40">
-                <polygon points="32,20 12,8 12,32" fill="currentColor" />
-            </svg></div>
-        <div class="dpad-btn dpad-down" data-dir="down"><svg viewBox="0 0 40 40">
-                <polygon points="20,32 8,12 32,12" fill="currentColor" />
-            </svg></div>
+    
+    <!-- Virtual D-Pad for joystick support -->
+    <div id="dpad" class="dpad hidden">
+        <div class="dpad-center"></div>
     </div>
+
     <script type="module">
         import { ALL_GAMES, GAME_SIZE } from './js/microgames.js';
         import { InputManager } from './js/input.js';
         const S = GAME_SIZE, canvas = document.getElementById('game-canvas'), ctx = canvas.getContext('2d'), input = new InputManager();
         let W, H, games, cur = 0, spd = 1, failT = 0;
-        function resize() { const d = devicePixelRatio || 1; W = innerWidth; H = innerHeight; canvas.width = W * d; canvas.height = H * d; canvas.style.width = W + 'px'; canvas.style.height = H + 'px'; ctx.setTransform(d, 0, 0, d, 0, 0); }
-        addEventListener('resize', resize); resize();
+        
+        function resize() { 
+            const d = devicePixelRatio || 1; 
+            W = window.innerWidth; 
+            H = window.innerHeight; 
+            canvas.width = W * d; 
+            canvas.height = H * d; 
+            canvas.style.width = W + 'px'; 
+            canvas.style.height = H + 'px'; 
+            ctx.setTransform(d, 0, 0, d, 0, 0); 
+        }
+        window.addEventListener('resize', resize); 
+        resize();
+        
         games = ALL_GAMES.map(G => new G());
         const sel = document.getElementById('sel');
-        games.forEach((g, i) => { const o = document.createElement('option'); o.value = i; o.textContent = `${i + 1}. ${g.name}`; sel.appendChild(o); });
-        // URL param: ?game=5
+        games.forEach((g, i) => { 
+            const o = document.createElement('option'); 
+            o.value = i; 
+            o.textContent = `${i + 1}. ${g.name}`; 
+            sel.appendChild(o); 
+        });
+        
+        const changeGame = (dir) => {
+            cur = (cur + dir + games.length) % games.length;
+            sel.value = cur;
+            games[cur].reset();
+            failT = 0;
+        };
+
         const p = new URLSearchParams(location.search).get('game');
         if (p !== null) { cur = parseInt(p); sel.value = cur; }
+        
         sel.onchange = () => { cur = +sel.value; games[cur].reset(); failT = 0; };
+        
+        document.getElementById('prev-btn').onclick = () => changeGame(-1);
+        document.getElementById('next-btn').onclick = () => changeGame(1);
+
         const spdEl = document.getElementById('spd'), spdVal = document.getElementById('spd-val'), statusEl = document.getElementById('status');
         spdEl.oninput = () => { spd = +spdEl.value; spdVal.textContent = spd.toFixed(1) + '×'; };
+        
         window.addEventListener('keydown', e => {
-            if (e.key === ',' || e.key === '.') {
-                if (e.key === ',') cur = (cur - 1 + games.length) % games.length;
-                if (e.key === '.') cur = (cur + 1) % games.length;
-                sel.value = cur;
-                games[cur].reset();
-                failT = 0;
-            }
+            if (e.key === ',' || e.key === '<') changeGame(-1);
+            if (e.key === '.' || e.key === '>') changeGame(1);
         });
+        
         let lastT = 0;
         function loop(ts) {
             requestAnimationFrame(loop);
@@ -195,71 +241,90 @@
             if (!g.failed) g.update(dt, input.keys, spd, true);
             if (g.failed && failT === 0) failT = ts;
             if (g.failed && ts - failT > 1500) { g.reset(); failT = 0; }
-            statusEl.textContent = g.failed ? 'FAILED — resetting...' : '';
+            statusEl.textContent = g.failed ? 'SYSTEM COLLAPSE' : '';
+            
             // Render
-            ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, W, H);
-            const sz = Math.min(W * 0.9, H * 0.8 - 50);
-            const ox = (W - sz) / 2, oy = 50 + (H - 50 - sz) / 2;
+            ctx.fillStyle = '#05050a'; 
+            ctx.fillRect(0, 0, W, H);
+            
+            const margin = W < 768 ? 20 : 60;
+            const topBarHeight = document.getElementById('bar').offsetHeight;
+            const availableH = H - topBarHeight - 100;
+            const sz = Math.min(W - margin * 2, availableH);
+            
+            const ox = (W - sz) / 2, oy = topBarHeight + (availableH - sz) / 2 + 20;
+            
             ctx.save();
             // Game border
-            ctx.strokeStyle = g.failed ? '#ff335580' : g.color + '40'; ctx.lineWidth = 2; ctx.strokeRect(ox - 1, oy - 1, sz + 2, sz + 2);
+            ctx.strokeStyle = g.failed ? '#ff335580' : g.color + '40'; 
+            ctx.lineWidth = 2; 
+            ctx.strokeRect(ox - 1, oy - 1, sz + 2, sz + 2);
+            
             // Clip and scale
-            ctx.beginPath(); ctx.rect(ox, oy, sz, sz); ctx.clip();
-            ctx.translate(ox, oy); ctx.scale(sz / S, sz / S);
-            ctx.fillStyle = '#0c0c16'; ctx.fillRect(0, 0, S, S);
+            ctx.beginPath(); 
+            ctx.rect(ox, oy, sz, sz); 
+            ctx.clip();
+            ctx.translate(ox, oy); 
+            ctx.scale(sz / S, sz / S);
+            ctx.fillStyle = '#0c0c16'; 
+            ctx.fillRect(0, 0, S, S);
+            
             if (g.failed) { ctx.globalAlpha = 0.3; }
             g.render(ctx);
+            
             if (g.failed) {
                 ctx.globalAlpha = 1; ctx.strokeStyle = '#ff3355'; ctx.lineWidth = 4;
                 ctx.beginPath(); ctx.moveTo(20, 20); ctx.lineTo(S - 20, S - 20); ctx.moveTo(S - 20, 20); ctx.lineTo(20, S - 20); ctx.stroke();
             }
             ctx.restore();
 
-            // Game hint and controls
-            const cx = W / 2;
-            const cy = oy + sz + 38;
-            
-            ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-            ctx.font = "bold 14px 'Orbitron',sans-serif";
+            // Game hint
+            ctx.textAlign = 'center'; 
+            ctx.textBaseline = 'top';
+            ctx.font = "bold 16px 'Orbitron',sans-serif";
             ctx.fillStyle = '#fff';
-            ctx.fillText(g.hint, cx, oy + sz + 32);
+            ctx.fillText(g.hint.toUpperCase(), W / 2, oy + sz + 30);
 
+            // Controls
             if (g.controls) {
-                const gap = 20;
+                const gap = 24;
                 const totalW = (g.controls.length - 1) * gap;
-                let startX = cx - totalW / 2;
+                let startX = (W / 2) - totalW / 2;
                 g.controls.forEach(ctrl => {
-                    drawControlIcon(startX, oy + sz + 58, ctrl, g.color);
+                    drawControlIcon(startX, oy + sz + 65, ctrl, g.color);
                     startX += gap;
                 });
             }
 
-            // Game name
-            ctx.fillStyle = g.color; ctx.font = "bold 11px 'Orbitron',sans-serif"; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-            ctx.fillText(g.name, W / 2, oy - 22);
+            // Game name header
+            ctx.fillStyle = g.color; 
+            ctx.font = "bold 12px 'Orbitron',sans-serif"; 
+            ctx.textAlign = 'center'; 
+            ctx.textBaseline = 'bottom';
+            ctx.fillText(g.name, W / 2, oy - 15);
         }
 
         function drawControlIcon(x, y, type, color) {
             ctx.save();
             ctx.translate(x, y);
             ctx.strokeStyle = color;
-            ctx.lineWidth = 2.0;
+            ctx.lineWidth = 2.5;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
             ctx.beginPath();
-            const s = 5;
+            const s = 6;
             if (type === 'up') {
-                ctx.moveTo(0, s); ctx.lineTo(0, -s); // stem
-                ctx.moveTo(-3, -s+3); ctx.lineTo(0, -s); ctx.lineTo(3, -s+3); // head
+                ctx.moveTo(0, s); ctx.lineTo(0, -s);
+                ctx.moveTo(-4, -s+4); ctx.lineTo(0, -s); ctx.lineTo(4, -s+4);
             } else if (type === 'down') {
-                ctx.moveTo(0, -s); ctx.lineTo(0, s); // stem
-                ctx.moveTo(-3, s-3); ctx.lineTo(0, s); ctx.lineTo(3, s-3); // head
+                ctx.moveTo(0, -s); ctx.lineTo(0, s);
+                ctx.moveTo(-4, s-4); ctx.lineTo(0, s); ctx.lineTo(4, s-4);
             } else if (type === 'left') {
-                ctx.moveTo(s, 0); ctx.lineTo(-s, 0); // stem
-                ctx.moveTo(-s+3, -3); ctx.lineTo(-s, 0); ctx.lineTo(-s+3, 3); // head
+                ctx.moveTo(s, 0); ctx.lineTo(-s, 0);
+                ctx.moveTo(-s+4, -4); ctx.lineTo(-s, 0); ctx.lineTo(-s+4, 4);
             } else if (type === 'right') {
-                ctx.moveTo(-s, 0); ctx.lineTo(s, 0); // stem
-                ctx.moveTo(s-3, -3); ctx.lineTo(s, 0); ctx.lineTo(s-3, 3); // head
+                ctx.moveTo(-s, 0); ctx.lineTo(s, 0);
+                ctx.moveTo(s-4, -4); ctx.lineTo(s, 0); ctx.lineTo(s-4, 4);
             }
             ctx.stroke();
             ctx.restore();

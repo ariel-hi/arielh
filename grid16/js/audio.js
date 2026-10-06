@@ -14,19 +14,31 @@ export class AudioEngine {
     }
 
     init() {
+        if (this.ctx && this.ctx.state !== 'closed') return;
+
+        let context;
         try {
-            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            this.masterGain = this.ctx.createGain();
-            this.masterGain.gain.value = 0.3;
-            this.masterGain.connect(this.ctx.destination);
+            context = new (window.AudioContext || window.webkitAudioContext)();
+            const masterGain = context.createGain();
+            masterGain.gain.value = 0.3;
+            masterGain.connect(context.destination);
+            this.ctx = context;
+            this.masterGain = masterGain;
+            this.enabled = true;
         } catch (e) {
+            this.ctx = null;
+            this.masterGain = null;
             this.enabled = false;
+            if (context) {
+                try { Promise.resolve(context.close()).catch(() => {}); } catch (e) {}
+            }
         }
     }
 
     resume() {
         if (this.ctx && this.ctx.state === 'suspended') {
-            this.ctx.resume();
+            // A browser may block audio; the next Play or Retry can try again.
+            try { Promise.resolve(this.ctx.resume()).catch(() => {}); } catch (e) {}
         }
     }
 

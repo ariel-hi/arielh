@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /analytics/
+Disallow: /.analytics-private/
+Disallow: /.leaderboards-private/
+Disallow: /api/
+Disallow: /scripts/
+Disallow: /grid16/dev.html
+Sitemap: https://arielh.com/sitemap.xml

@@ -13,15 +13,24 @@ export class InputManager {
     // Keyboard
     window.addEventListener('keydown', e => this._onKey(e, true));
     window.addEventListener('keyup', e => this._onKey(e, false));
+    window.addEventListener('blur', () => this.reset());
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.reset();
+    });
+    document.addEventListener('focusin', e => {
+      if (e.target.closest?.('.overlay, nav, input, textarea, select, button, [contenteditable="true"]')) this.reset();
+    });
 
     // D-Pad touch
     const dpad = document.getElementById('dpad');
     if (!dpad) return;
 
-    // Show d-pad on touch devices
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
-      dpad.classList.remove('hidden');
-    }
+    // Show d-pad container setup — it's now dynamic
+    dpad.classList.remove('hidden');
+    dpad.style.opacity = '0'; // Hidden until touch
+
+    let touchOrigin = null;
+    let isMouseDown = false;
 
     const resetDpadSignals = () => {
       this.keys.up = false;
@@ -29,43 +38,64 @@ export class InputManager {
       this.keys.left = false;
       this.keys.right = false;
       dpad.classList.remove('active');
+      dpad.style.opacity = '0';
       const nub = dpad.querySelector('.dpad-center');
       if (nub) nub.style.transform = 'translate(0, 0)';
+      touchOrigin = null;
+      isMouseDown = false;
     };
+    this._resetPointer = resetDpadSignals;
 
-    const handleDpadTouch = (e) => {
+    const handleTouchStart = (e) => {
+      // Leave menus and form controls available for scrolling and interaction.
+      if (e.target.closest('.overlay, .neon-btn, .name-entry, nav, a, button, select, input, #bar, .mobile-swap')) {
+        this.reset();
+        return;
+      }
+      
       if (e.cancelable) e.preventDefault();
       
-      if (e.type === 'touchend' || e.type === 'touchcancel') {
-        if (e.touches.length === 0) {
-          resetDpadSignals();
-          return;
-        }
-      }
+      const touch = e.touches[0];
+      touchOrigin = { x: touch.clientX, y: touch.clientY };
+      
+      // Position dpad at touch start
+      dpad.style.left = `${touchOrigin.x}px`;
+      dpad.style.top = `${touchOrigin.y}px`;
+      dpad.style.opacity = '1';
+      
+      processTouch(touch);
+    };
 
+    const handleTouchMove = (e) => {
+      if (!touchOrigin) return;
+      if (e.cancelable) e.preventDefault();
       processTouch(e.touches[0]);
     };
 
+    const handleTouchEnd = (e) => {
+      if (e.touches.length === 0) {
+        resetDpadSignals();
+      }
+    };
+
     const processTouch = (touch) => {
-      const rect = dpad.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      if (!touchOrigin) return;
       
-      const dx = touch.clientX - centerX;
-      const dy = touch.clientY - centerY;
+      const dx = touch.clientX - touchOrigin.x;
+      const dy = touch.clientY - touchOrigin.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      const maxDist = rect.width / 2;
+      const limit = 60; // Max visual displacement
       
       // Visual feedback: move the nub
       const nub = dpad.querySelector('.dpad-center');
       if (nub) {
-        const moveX = (dx / dist) * Math.min(dist, maxDist * 0.6);
-        const moveY = (dy / dist) * Math.min(dist, maxDist * 0.6);
+        const moveX = (dx / (dist || 1)) * Math.min(dist, limit);
+        const moveY = (dy / (dist || 1)) * Math.min(dist, limit);
         nub.style.transform = `translate(${moveX}px, ${moveY}px)`;
       }
 
       // Define a deadzone
-      const deadzone = rect.width * 0.15;
+      const deadzone = 15;
       if (dist < deadzone) {
         this.keys.up = this.keys.down = this.keys.left = this.keys.right = false;
         dpad.classList.remove('active');
@@ -77,44 +107,42 @@ export class InputManager {
       // Calculate direction with overlap (diagonal)
       const angle = Math.atan2(dy, dx) * (180 / Math.PI);
       
-      // Reset keys before setting based on angle
-      this.keys.up = false;
-      this.keys.down = false;
-      this.keys.left = false;
-      this.keys.right = false;
-
-      // Use a wider arc for each direction to allow diagonals
-      // Up: -157.5 to -22.5
-      // Down: 22.5 to 157.5
-      // Left: 112.5 to 180 and -180 to -112.5
-      // Right: -67.5 to 67.5
-
-      if (angle >= -157.5 && angle <= -22.5) this.keys.up = true;
-      if (angle >= 22.5 && angle <= 157.5) this.keys.down = true;
-      if (Math.abs(angle) >= 112.5) this.keys.left = true;
-      if (Math.abs(angle) <= 67.5) this.keys.right = true;
+      this.keys.up = (angle >= -157.5 && angle <= -22.5);
+      this.keys.down = (angle >= 22.5 && angle <= 157.5);
+      this.keys.left = (Math.abs(angle) >= 112.5);
+      this.keys.right = (Math.abs(angle) <= 67.5);
     };
 
-    dpad.addEventListener('touchstart', handleDpadTouch, { passive: false });
-    dpad.addEventListener('touchmove', handleDpadTouch, { passive: false });
-    dpad.addEventListener('touchend', handleDpadTouch, { passive: false });
-    dpad.addEventListener('touchcancel', handleDpadTouch, { passive: false });
+    // Listen on the document for "drag anywhere" feel
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     // Mouse fallback for desktop testing
-    let isMouseDown = false;
-    dpad.addEventListener('mousedown', e => {
+    document.addEventListener('mousedown', e => {
+      if (e.button !== 0) return;
+      if (e.target.closest('.overlay, .neon-btn, .name-entry, nav, a, button, select, input, #bar, .mobile-swap')) {
+        this.reset();
+        return;
+      }
       isMouseDown = true;
-      handleDpadTouch({ 
+      handleTouchStart({ 
         preventDefault: () => {}, 
         clientX: e.clientX, 
         clientY: e.clientY,
         touches: [{ clientX: e.clientX, clientY: e.clientY }],
-        type: 'mousedown'
+        type: 'mousedown',
+        target: e.target
       });
     });
     window.addEventListener('mousemove', e => {
       if (!isMouseDown) return;
-      handleDpadTouch({ 
+      if ((e.buttons & 1) === 0) {
+        resetDpadSignals();
+        return;
+      }
+      handleTouchMove({ 
         preventDefault: () => {}, 
         clientX: e.clientX, 
         clientY: e.clientY,
@@ -122,9 +150,8 @@ export class InputManager {
         type: 'mousemove'
       });
     });
-    window.addEventListener('mouseup', () => {
-      if (!isMouseDown) return;
-      isMouseDown = false;
+    window.addEventListener('mouseup', e => {
+      if (!isMouseDown || e.button !== 0) return;
       resetDpadSignals();
     });
 
@@ -149,12 +176,16 @@ export class InputManager {
     };
     const dir = map[e.key];
     if (dir) {
-      e.preventDefault();
+      const inControl = e.target.closest?.('nav, input, textarea, select, button, [contenteditable="true"]');
+      const inMenu = Boolean(document.querySelector('.overlay:not(.hidden)'));
+      if (down && (inMenu || inControl || e.ctrlKey || e.metaKey || e.altKey)) return;
+      if (!inMenu && !inControl) e.preventDefault();
       this.keys[dir] = down;
     }
   }
 
   reset() {
     this.keys.up = this.keys.down = this.keys.left = this.keys.right = false;
+    this._resetPointer?.();
   }
 }

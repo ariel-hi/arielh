@@ -1,32 +1,7 @@
-/*
- * Rufus Multiverse - WebGL Shader Manager
- * "Immaculate" Space Edition - Interactive
- */
-
-const canvas = document.getElementById('bgCanvas');
-const gl = canvas.getContext('webgl2');
-
-if (!gl) {
-    console.error('WebGL 2 not supported');
-}
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    gl.viewport(0, 0, canvas.width, canvas.height);
-}
-window.addEventListener('resize', resize);
-resize();
-
-// --- Data ---
-
-const images = [
-    'images/rufus-01.jpg', 'images/rufus-02.jpg', 'images/rufus-03.jpg',
-    'images/rufus-04.jpg', 'images/rufus-05.jpg', 'images/rufus-06.jpg',
-    'images/rufus-07.jpg', 'images/rufus-08.jpg', 'images/rufus-09.jpg'
-];
-
-// User-provided Names
+/* Rufus — original cosmic shader and names, with an accessible gallery. */
+(() => {
+    'use strict';
+    const canvas = document.getElementById('bgCanvas');
 const names = [
     'Rufus', 'RUFUS', 'Rufus!', 'Bluefus', 'Truefus', 'Goofus', 'Jewfus', 'Moofus',
     'Twofus', 'Throughfus', 'Woofus', 'Zeusfus',
@@ -38,9 +13,6 @@ const names = [
     'Cashewfus', 'Honeydewfus', 'Shampoofus', 'Tattoofus', 'Taboofus', 'Bamboofus',
     'Waterloofus', 'Tofufus', 'Fonduefus', 'Shoefus', 'Gluefus', 'Cluefus'
 ];
-
-// --- Shaders ---
-
 const vsSource = `#version 300 es
 in vec2 a_position;
 out vec2 v_uv;
@@ -49,8 +21,6 @@ void main() {
     gl_Position = vec4(a_position, 0.0, 1.0);
 }
 `;
-
-// Space: "Deep Cosmos" with Parallax & Distortion
 const fsSpace = `#version 300 es
 precision highp float;
 in vec2 v_uv;
@@ -67,10 +37,10 @@ uniform vec2 u_mouse;
 #define zoom   0.800
 #define tile   0.850
 #define speed  0.010 
-#define brightness 0.0015
+#define brightness 0.0009
 #define darkmatter 0.300
 #define distfading 0.730
-#define saturation 0.850
+#define saturation 0.180
 
 void main() {
     vec2 uv = v_uv - 0.5;
@@ -131,158 +101,272 @@ void main() {
     outColor = vec4(finalColor, 1.0);
 }
 `;
+// Quiet, near-neutral tints so the photos carry the color.
+const spaceColors = [
+    [0.55, 0.52, 0.48], // Bone
+    [0.60, 0.46, 0.38], // Ember dust
+    [0.42, 0.47, 0.48]  // Cool slate
+];
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const motionButton = document.getElementById('motionToggle');
+    const fallback = document.getElementById('webglFallback');
+    let manuallyPaused = false;
+    let paused = motionPreference.matches;
+    let renderer = null;
+    let gl = null;
+    let frameId = 0;
+    let lastTick = 0;
+    let lastDraw = 0;
+    let time = 0;
+    let mouseX = 0.5;
+    let mouseY = 0.5;
+    let targetMouseX = 0.5;
+    let targetMouseY = 0.5;
+    let currentColor = [0.1, 0.4, 0.8];
 
-// --- WebGL Setup ---
+    function render(timestamp) {
+        frameId = 0;
+        if (!renderer || paused || document.hidden) return;
+        if (lastTick) time += Math.min(timestamp - lastTick, 100) * 0.001;
+        lastTick = timestamp;
+        // Keep the 30fps budget aligned instead of discarding fractional frame time.
+        const interval = 1000 / 30;
+        const elapsed = timestamp - lastDraw;
+        if (elapsed >= interval - 0.01) {
+            renderer.draw(time);
+            // Skip missed frames after a stall; never replay expensive fragment work.
+            lastDraw += Math.max(1, Math.floor((elapsed + 0.01) / interval)) * interval;
+        }
+        frameId = requestAnimationFrame(render);
+    }
+    function syncMotion() {
+        cancelAnimationFrame(frameId);
+        frameId = 0;
+        lastTick = 0;
+        lastDraw = 0;
+        if (motionButton) motionButton.hidden = false;
+        if (motionButton) motionButton.textContent = paused ? 'Play' : 'Pause';
+        if (motionButton) motionButton.setAttribute('aria-label', paused ? 'Play slideshow and background animation' : 'Pause slideshow and background animation');
+        if (renderer && !document.hidden) {
+            renderer.draw(time);
+            if (!paused) frameId = requestAnimationFrame(render);
+        }
+        scheduleSlideshow();
+    }
+    function showFallback(message) {
+        fallback.textContent = message;
+        fallback.hidden = false;
+        canvas.hidden = true;
+    }
+    function initializeVisual() {
+        try {
+            renderer = createRenderer();
+            renderer.resize();
+            fallback.hidden = true;
+            canvas.hidden = false;
+        } catch (error) {
+            renderer = null;
+            showFallback('The animated background is unavailable in this browser. All nine photos are still here.');
+        }
+        syncMotion();
+    }
+    motionButton?.addEventListener('click', () => {
+        // Play can opt into motion even when the system preference is reduced.
+        manuallyPaused = !paused;
+        paused = manuallyPaused;
+        syncMotion();
+    });
+    motionPreference.addEventListener('change', (event) => {
+        paused = manuallyPaused || event.matches;
+        syncMotion();
+    });
+    document.addEventListener('visibilitychange', syncMotion);
+    window.addEventListener('resize', () => {
+        if (!renderer) return;
+        renderer.resize();
+        if (!document.hidden) renderer.draw(time);
+    });
+    function trackPointer(event) {
+        if (paused || document.hidden) return;
+        targetMouseX = Math.min(1, Math.max(0, event.clientX / window.innerWidth));
+        targetMouseY = 1 - Math.min(1, Math.max(0, event.clientY / window.innerHeight));
+    }
+    canvas.addEventListener('pointermove', trackPointer);
+    canvas.addEventListener('pointerdown', trackPointer);
+    canvas.addEventListener('webglcontextlost', (event) => {
+        event.preventDefault();
+        renderer = null;
+        showFallback('The animated background was interrupted. You can keep browsing the photos.');
+        syncMotion();
+    });
+    canvas.addEventListener('webglcontextrestored', initializeVisual);
 
-function createProgram(fsSource) {
-    const vs = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vs, vsSource);
-    gl.compileShader(vs);
-
-    const fs = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fs, fsSource);
-    gl.compileShader(fs);
-
-    if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
-        console.error(gl.getShaderInfoLog(fs));
+    // Shader uniforms and buffers are created once, outside the animation loop.
+    function createRenderer() {
+        const context = canvas.getContext('webgl2', { antialias: false, alpha: false });
+        if (!context) throw new Error('WebGL 2 is unavailable.');
+        gl = context;
+        function compile(type, source) {
+            const shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                gl.deleteShader(shader);
+                throw new Error('The visual could not be compiled.');
+            }
+            return shader;
+        }
+        const vertex = compile(gl.VERTEX_SHADER, vsSource);
+        const fragment = compile(gl.FRAGMENT_SHADER, fsSpace);
+        const program = gl.createProgram();
+        gl.attachShader(program, vertex);
+        gl.attachShader(program, fragment);
+        gl.bindAttribLocation(program, 0, 'a_position');
+        gl.linkProgram(program);
+        gl.deleteShader(vertex);
+        gl.deleteShader(fragment);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+            gl.deleteProgram(program);
+            throw new Error('The visual could not be initialized.');
+        }
+        const vao = gl.createVertexArray();
+        gl.bindVertexArray(vao);
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+            -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1
+        ]), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+        const uniforms = {
+            time: gl.getUniformLocation(program, 'u_time'),
+            resolution: gl.getUniformLocation(program, 'u_resolution'),
+            mouse: gl.getUniformLocation(program, 'u_mouse'),
+            color: gl.getUniformLocation(program, 'u_color')
+        };
+        return {
+            resize() {
+                const width = Math.max(1, window.innerWidth);
+                const height = Math.max(1, window.innerHeight);
+                // Limit expensive fragment work on high-density and very large displays.
+                const scale = Math.min(window.devicePixelRatio || 1, 1.5, Math.sqrt(1800000 / (width * height)));
+                canvas.width = Math.max(1, Math.floor(width * scale));
+                canvas.height = Math.max(1, Math.floor(height * scale));
+                gl.viewport(0, 0, canvas.width, canvas.height);
+            },
+            draw(time) {
+                if (!paused) {
+                    mouseX += (targetMouseX - mouseX) * 0.08;
+                    mouseY += (targetMouseY - mouseY) * 0.08;
+                }
+                gl.useProgram(program);
+                gl.bindVertexArray(vao);
+                gl.uniform1f(uniforms.time, time);
+                gl.uniform2f(uniforms.resolution, canvas.width, canvas.height);
+                gl.uniform2f(uniforms.mouse, mouseX, mouseY);
+                if (uniforms.color !== null) gl.uniform3fv(uniforms.color, currentColor);
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+            }
+        };
     }
 
-    const prog = gl.createProgram();
-    gl.attachShader(prog, vs);
-    gl.attachShader(prog, fs);
-    gl.linkProgram(prog);
-    return prog;
-}
-
-const spaceProgram = createProgram(fsSpace);
-
-// Quad
-const positionBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-    -1, -1, 1, -1, -1, 1,
-    -1, 1, 1, -1, 1, 1,
-]), gl.STATIC_DRAW);
-
-const vao = gl.createVertexArray();
-gl.bindVertexArray(vao);
-gl.enableVertexAttribArray(0);
-gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-
-// --- Logic ---
-
-let currentColor = [0.5, 0.5, 0.5];
-let startTime = Date.now();
-let mouseX = 0.5;
-let mouseY = 0.5;
-let targetMouseX = 0.5;
-let targetMouseY = 0.5;
-
-// Mouse Tracking
-window.addEventListener('mousemove', (e) => {
-    targetMouseX = e.clientX / window.innerWidth;
-    targetMouseY = 1.0 - e.clientY / window.innerHeight; // Flip Y
-});
-
-window.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    targetMouseX = e.touches[0].clientX / window.innerWidth;
-    targetMouseY = 1.0 - e.touches[0].clientY / window.innerHeight;
-}, { passive: false });
-
-function render() {
-    const time = (Date.now() - startTime) * 0.001;
-
-    // Smooth mouse
-    mouseX += (targetMouseX - mouseX) * 0.1;
-    mouseY += (targetMouseY - mouseY) * 0.1;
-
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    gl.useProgram(spaceProgram);
-    gl.bindVertexArray(vao);
-
-    const uTime = gl.getUniformLocation(spaceProgram, 'u_time');
-    const uRes = gl.getUniformLocation(spaceProgram, 'u_resolution');
-    const uColor = gl.getUniformLocation(spaceProgram, 'u_color');
-    const uMouse = gl.getUniformLocation(spaceProgram, 'u_mouse');
-
-    gl.uniform1f(uTime, time);
-    gl.uniform2f(uRes, gl.canvas.width, gl.canvas.height);
-    gl.uniform3fv(uColor, currentColor);
-    gl.uniform2f(uMouse, mouseX, mouseY);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-    requestAnimationFrame(render);
-}
-
-// --- App Logic ---
-
-const imgElement = document.getElementById('rufusImage');
-const nameElement = document.getElementById('randomName');
-
-function getRandomElement(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-}
-
-let lastImageIndex = -1;
-
-function getUniqueRandomImage() {
-    let newIndex;
-    do {
-        newIndex = Math.floor(Math.random() * images.length);
-    } while (newIndex === lastImageIndex && images.length > 1);
-
-    lastImageIndex = newIndex;
-    return images[newIndex];
-}
-
-// Space-Safe Color Palette
-const spaceColors = [
-    [0.1, 0.4, 0.8], // Deep Blue
-    [0.5, 0.0, 0.8], // Nebula Purple
-    [0.0, 0.8, 0.8], // Cyan/Teal
-    [0.8, 0.2, 0.5], // Magenta
-    [0.2, 0.1, 0.4], // Dark Indigo
-    [0.0, 0.5, 0.5], // Deep Teal
-    [0.6, 0.1, 0.1], // Red Dwarf
-    [0.1, 0.6, 0.3]  // Emerald Nebula
-];
-
-function generateSpaceColor() {
-    // Pick a base color
-    const base = spaceColors[Math.floor(Math.random() * spaceColors.length)];
-
-    // Add slight variance
-    return [
-        Math.max(0, Math.min(1, base[0] + (Math.random() - 0.5) * 0.2)),
-        Math.max(0, Math.min(1, base[1] + (Math.random() - 0.5) * 0.2)),
-        Math.max(0, Math.min(1, base[2] + (Math.random() - 0.5) * 0.2))
+    const photos = [
+        { src: 'images/rufus-01.webp', width: 900, height: 1600, alt: 'Rufus sleeping on a burgundy blanket with his tongue hanging out.' },
+        { src: 'images/rufus-02.webp', width: 900, height: 1600, alt: 'Rufus standing on a gray couch beside a red toy, licking his nose.' },
+        { src: 'images/rufus-03.webp', width: 900, height: 1600, alt: 'A close-up of Rufus asleep on a burgundy blanket, his tongue resting outside his mouth.' },
+        { src: 'images/rufus-04.webp', width: 900, height: 1600, alt: 'Rufus looking up from a patterned rug with his tongue curled over his nose.' },
+        { src: 'images/rufus-05.webp', width: 900, height: 1600, alt: 'Rufus enjoying a chin scratch while standing on a tiled floor.' },
+        { src: 'images/rufus-06.webp', width: 900, height: 1600, alt: 'Rufus resting his head on a turquoise toy while someone scratches his forehead.' },
+        { src: 'images/rufus-07.webp', width: 576, height: 1024, alt: 'Rufus sitting on a burgundy blanket with his tongue out during a chest scratch.' },
+        { src: 'images/rufus-08.webp', width: 576, height: 1024, alt: 'Rufus looking up beside a chair with one eye closed as someone scratches his neck.' },
+        { src: 'images/rufus-09.webp', width: 576, height: 1024, alt: 'Rufus licking his nose with his eyes closed beside a chair.' }
     ];
-}
+    const image = document.getElementById('rufusImage');
+    const name = document.getElementById('randomName');
+    const count = document.getElementById('photoCount');
+    const announcement = document.getElementById('photoAnnouncement');
+    let currentPhoto = 0;
+    let slideshowTimer = 0;
+    const backdrop = document.getElementById('rufusBackdrop');
+    const thumbList = document.getElementById('rufusThumbs');
+    const thumbButtons = [];
+    // Every photo stays one click away; the list is built only where the DOM supports it.
+    if (thumbList && typeof thumbList.append === 'function' && typeof document.createElement === 'function') {
+        photos.forEach((photo, index) => {
+            const item = document.createElement('li');
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'rufus-thumb';
+            button.setAttribute('aria-label', 'Show photo ' + (index + 1) + ': ' + photo.alt);
+            const thumb = document.createElement('img');
+            thumb.src = photo.src;
+            thumb.alt = '';
+            thumb.loading = 'lazy';
+            thumb.decoding = 'async';
+            button.append(thumb);
+            button.addEventListener('click', () => showPhoto(index, true));
+            item.append(button);
+            thumbList.append(item);
+            thumbButtons.push(button);
+        });
+    }
+    function syncSelection() {
+        thumbButtons.forEach((button, index) => {
+            if (index === currentPhoto) button.setAttribute('aria-current', 'true');
+            else button.removeAttribute('aria-current');
+        });
+        if (backdrop && backdrop.style) backdrop.style.backgroundImage = 'url("' + photos[currentPhoto].src + '")';
+    }
 
-function updateContent() {
-    // Fade out
-    nameElement.classList.remove('show');
+    function nextRandomPhoto() {
+        // Pick any other photo without a retry loop.
+        return (currentPhoto + 1 + Math.floor(Math.random() * (photos.length - 1))) % photos.length;
+    }
+    function showPhoto(index, announce = false) {
+        currentPhoto = (index + photos.length) % photos.length;
+        const photo = photos[currentPhoto];
+        image.alt = photo.alt;
+        image.width = photo.width;
+        image.height = photo.height;
+        image.src = photo.src;
+        name.textContent = names[Math.floor(Math.random() * names.length)];
+        count.textContent = (currentPhoto + 1) + ' / ' + photos.length;
+        syncSelection();
+        const baseColor = spaceColors[Math.floor(Math.random() * spaceColors.length)];
+        currentColor = baseColor.map(channel => Math.max(0, Math.min(1, channel + (Math.random() - 0.5) * 0.2)));
+        if (renderer && !document.hidden) renderer.draw(time);
+        if (announce) announcement.textContent = 'Photo ' + (currentPhoto + 1) + ' of ' + photos.length + '. ' + photo.alt;
+        scheduleSlideshow();
+    }
+    function scheduleSlideshow() {
+        clearTimeout(slideshowTimer);
+        slideshowTimer = 0;
+        if (paused || document.hidden) return;
+        slideshowTimer = setTimeout(() => showPhoto(nextRandomPhoto()), 5000);
+    }
+    document.getElementById('previousPhoto').addEventListener('click', () => showPhoto(currentPhoto - 1, true));
+    document.getElementById('nextPhoto').addEventListener('click', () => showPhoto(currentPhoto + 1, true));
+    document.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+            || event.target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        showPhoto(currentPhoto + (event.key === 'ArrowLeft' ? -1 : 1), true);
+    });
+    const photoErrorMessage = 'This photo could not load. Try the next photo.';
+    function reportPhotoError() {
+        announcement.textContent = photoErrorMessage;
+    }
+    function clearPhotoError() {
+        if (image.complete && image.naturalWidth > 0 && announcement.textContent === photoErrorMessage) {
+            announcement.textContent = '';
+        }
+    }
+    image.addEventListener('error', reportPhotoError);
+    image.addEventListener('load', clearPhotoError);
+    if (image.complete && image.naturalWidth === 0) reportPhotoError();
+    document.querySelector('.gallery-controls').hidden = false;
+    syncSelection();
 
-    setTimeout(() => {
-        // Update data
-        const newName = getRandomElement(names);
-        const newImage = getUniqueRandomImage();
-
-        nameElement.textContent = newName;
-        imgElement.src = newImage;
-
-        // Update Color
-        currentColor = generateSpaceColor();
-
-        // Fade in
-        nameElement.classList.add('show');
-    }, 500);
-}
-
-// Init
-setActiveNav('rufus');
-updateContent();
-setInterval(updateContent, 5000);
-requestAnimationFrame(render);
+    initializeVisual();
+})();

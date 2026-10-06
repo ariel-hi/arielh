@@ -1,6 +1,19 @@
 node_modules/
 .parcel-cache/
+__pycache__/
+*.pyc
 *.dump
+.verification/
+.release/
+.analytics-private/config.php
+.analytics-private/*.sqlite*
+.analytics-private/*.json
+.analytics-private/*.lock
+.leaderboards-private/*.sqlite*
+.leaderboards-private/*.json
+.leaderboards-private/*.lock
+deploy.local.json
+analytics/analytics-tests/
 
 # Shooter game build artifacts (only the current Parcel output is needed)
 shooter_game/dist/

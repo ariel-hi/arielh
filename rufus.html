@@ -1,40 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Rufus | Ariel H</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@700;800;900&display=swap"
-        rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="shared.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="rufus.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rufus — Ariel Hirschberg</title>
+    <meta name="description" content="Photos of Rufus.">
+    <meta name="theme-color" content="#060a12">
+    <link rel="canonical" href="https://arielh.com/rufus.html">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Rufus — Ariel Hirschberg">
+    <meta property="og:description" content="Photos of Rufus.">
+    <meta property="og:url" content="https://arielh.com/rufus.html">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261008">
+    <link rel="stylesheet" href="shared.css?v=20261008">
+    <link rel="stylesheet" href="nav.css?v=20261008">
+    <link rel="stylesheet" href="rufus.css?v=20261008">
+    <link rel="stylesheet" href="/journey.css?v=20261008">
+    <script defer src="/journey.js?v=20261008"></script>
+  <!-- seo:start -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="author" content="Ariel Hirschberg">
+  <meta property="og:site_name" content="Ariel Hirschberg">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://arielh.com/images/rufus-04.webp">
+  <meta property="og:image:type" content="image/webp">
+  <meta property="og:image:width" content="900">
+  <meta property="og:image:height" content="1600">
+  <meta property="og:image:alt" content="Rufus, a brown and white bulldog, looking up with his tongue out.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Rufus | Ariel Hirschberg">
+  <meta name="twitter:description" content="Photos of Rufus.">
+  <meta name="twitter:image" content="https://arielh.com/images/rufus-04.webp">
+  <meta name="twitter:image:alt" content="Rufus, a brown and white bulldog, looking up with his tongue out.">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://arielh.com/#person",
+      "name": "Ariel Hirschberg",
+      "url": "https://arielh.com/",
+      "image": "https://arielh.com/images/social-card.png",
+      "alumniOf": {
+        "@type": "CollegeOrUniversity",
+        "name": "University of California, Berkeley"
+      },
+      "sameAs": [
+        "https://github.com/ariel-hi"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://arielh.com/#website",
+      "url": "https://arielh.com/",
+      "name": "Ariel Hirschberg",
+      "alternateName": "arielh.com",
+      "description": "Games, tools, and visual experiments by Ariel Hirschberg.",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://arielh.com/#person"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      }
+    },
+    {
+      "@type": "ImageGallery",
+      "@id": "https://arielh.com/rufus.html#webpage",
+      "url": "https://arielh.com/rufus.html",
+      "name": "Rufus | Ariel Hirschberg",
+      "description": "Photos of Rufus.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://arielh.com/#website"
+      },
+      "author": {
+        "@id": "https://arielh.com/#person"
+      },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://arielh.com/images/rufus-04.webp",
+        "width": 900,
+        "height": 1600
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://arielh.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Rufus",
+            "item": "https://arielh.com/rufus.html"
+          }
+        ]
+      }
+    }
+  ]
+}
+</script>
+  <!-- seo:end -->
 </head>
-
 <body class="dark-theme">
-    <nav></nav>
-
-    <canvas id="bgCanvas"></canvas>
-
-    <main class="gallery fade-in">
-        <img id="rufusImage" src="images/rufus-01.jpg" alt="Rufus">
+    <nav aria-label="Main navigation"><div class="nav-container"><a class="nav-wordmark" href="index.html" aria-label="Ariel Hirschberg, home">ah<span>.</span></a><div class="nav-links"><a href="/projects.html" data-atlas-open>Index</a><a href="about.html">About</a></div></div></nav>
+    <div class="rufus-backdrop" id="rufusBackdrop" aria-hidden="true"></div>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <main class="rufus-content" id="main-content">
+        <figure class="gallery">
+            <img id="rufusImage" src="images/rufus-01.webp" alt="Rufus sleeping on a burgundy blanket with his tongue hanging out." width="900" height="1600" fetchpriority="high">
+        </figure>
+        <section class="rufus-panel" aria-labelledby="randomName">
+            <p class="rufus-kicker">Photo gallery</p>
+            <h1 id="randomName">Rufus</h1>
+            <p class="rufus-intro">An English bulldog, mostly asleep or mid-lick.</p>
+            <div class="gallery-controls" aria-label="Photo controls" hidden>
+                <button id="previousPhoto" type="button" aria-label="Previous photo">Previous</button>
+                <span id="photoCount" aria-live="off">1 / 9</span>
+                <button id="nextPhoto" type="button" aria-label="Next photo">Next</button>
+            </div>
+            <ul class="rufus-thumbs" id="rufusThumbs" aria-label="All photos"></ul>
+        </section>
+        <p id="photoAnnouncement" class="visually-hidden" role="status"></p>
+        <p id="webglFallback" class="gallery-status" role="status" hidden></p>
+        <noscript><p class="gallery-status">Enable JavaScript to browse all nine photos.</p></noscript>
     </main>
-
-    <div id="randomName"></div>
-
-    <!-- Scripts -->
-    <script src="nav.js"></script>
+    <script src="nav.js?v=20261008"></script>
     <script>initNav('rufus');</script>
-    <script src="rufus.js"></script>
+    <script src="rufus.js?v=20261008"></script>
 </body>
-
 </html>

@@ -3,8 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Space Shooter Roguelike</title>
+    <meta name="robots" content="noindex">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -24,15 +25,14 @@
         }
 
         #game-container {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             background: #000;
+            overflow: hidden;
         }
 
         canvas {
@@ -41,9 +41,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Maintain aspect ratio */
-            max-width: 800px;
-            max-height: 600px;
+            object-fit: contain;
         }
 
         /* Mobile specific portrait adjustment */
@@ -86,44 +84,69 @@
 
         #loading {
             color: #fff;
-            z-index: 100;
+            z-index: 10000;
             background-color: #0f0f1b;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            width: 100%;
-            height: 100%;
             display: flex;
             position: absolute;
-            top: 0;
-            left: 0
+            inset: 0;
+            padding: 16px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+            box-sizing: border-box;
+            font: 16px/1.5 Arial, Helvetica, sans-serif;
         }
 
-        #loading h1 {
-            color: #4a78ff;
-            text-shadow: 3px 3px #000;
-            margin-bottom: 40px;
-            font-size: 18px; /* Slightly smaller for mobile */
+        .loading-content {
+            width: min(100%, 30rem);
+            margin: auto;
+            flex-shrink: 0;
+            text-align: center;
         }
 
-        #loading-bar {
-            background: #000;
-            border: 4px solid #fff;
-            width: 200px;
-            height: 30px;
-            position: relative
+        #loading h1 { margin: 0; font-size: 18px; font-weight: 500; }
+        #loading-status { margin: 12px 0; overflow-wrap: anywhere; }
+        #reload-game {
+            appearance: none;
+            min-height: 44px;
+            padding: 8px 16px;
+            border: 1px solid #8991a5;
+            border-radius: 0;
+            background: #14141c;
+            color: #fff;
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        #reload-game:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+        body.game-loading { touch-action: pan-y; }
+        body.game-loading #rotate-prompt { display: none !important; }
+        [hidden] { display: none !important; }
+
+        #mute-toggle[role="button"] {
+            min-width: 44px;
+            min-height: 44px;
+            box-sizing: border-box;
+            justify-content: center;
         }
 
-        #loading-progress {
-            background-color: #4aff94;
-            width: 0%;
-            height: 100%;
-            transition: width .3s
+        #mute-toggle[role="button"]:focus-visible {
+            outline: 3px solid #fff;
+            outline-offset: 3px;
+        }
+
+        .no-script-message {
+            max-width: 30rem;
+            padding: 0 1.5rem;
+            font: 16px/1.6 Arial, sans-serif;
+            text-align: center;
         }
     </style>
 </head>
 
-<body>
+<body class="game-loading">
     <div id="rotate-prompt">
         <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0020 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 004 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
         <p>Please rotate your device to landscape for the best experience</p>
@@ -131,9 +154,14 @@
 
     <div id="game-container">
         <div id="loading">
-            <h1>SPACE SHOOTER</h1>
-            <div id="loading-bar">
-                <div id="loading-progress"></div>
+            <div class="loading-content">
+                <h1>Space Shooter</h1>
+                <p id="loading-status" role="status">Loading…</p>
+                <button id="reload-game" type="button" hidden>Reload</button>
+                <noscript>
+                    <style>#loading-status, #rotate-prompt { display: none !important; }</style>
+                    <p class="no-script-message">JavaScript is needed to play Space Shooter. Enable it in your browser and reload this page.</p>
+                </noscript>
             </div>
         </div>
     </div> <audio id="bg-music" src="music.4794c797.mp3" loop autoplay volume="0.25"></audio> <audio id="sfx-hit"
@@ -142,9 +170,57 @@
         volume="0.25"></audio> <audio id="sfx-upgrade" src="upgrade.b0a32e88.mp3" preload style="display:none"
         volume="0.25"></audio>
     <script>
+        (() => {
+            const loading = document.getElementById('loading');
+            const status = document.getElementById('loading-status');
+            const reload = document.getElementById('reload-game');
+            const bundleURL = new URL('shooter_game.js', window.location.href);
+            let ready = false;
+            let failed = false;
+
+            function report(state) {
+                if (window.parent !== window) {
+                    window.parent.postMessage({ type: 'ariel-game-boot', game: 'shooter', state }, window.location.origin);
+                }
+            }
+            function offerReload(state) {
+                if (ready || (failed && state === 'waiting')) return;
+                failed = state === 'failed';
+                status.textContent = failed
+                    ? 'The game could not start. Reload to try again.'
+                    : 'The game is taking longer to load. You can wait or reload.';
+                reload.hidden = false;
+                report(state);
+            }
+            // Elapsed time only offers recovery; the game's own signal confirms success.
+            const watchdog = setTimeout(() => offerReload('waiting'), 20000);
+            reload.addEventListener('click', () => window.location.reload());
+            window.addEventListener('error', event => {
+                if (ready) return;
+                if (event.target?.id === 'game-bundle' && event.target.tagName === 'SCRIPT') {
+                    offerReload('failed');
+                } else if (event.filename) {
+                    try {
+                        const source = new URL(event.filename, window.location.href);
+                        if (source.origin === bundleURL.origin && source.pathname === bundleURL.pathname) offerReload('failed');
+                    } catch {}
+                }
+            }, true);
+            window.addEventListener('ariel-shooter-ready', () => {
+                if (ready) return;
+                ready = true;
+                clearTimeout(watchdog);
+                const restoreFocus = document.activeElement === reload;
+                loading.hidden = true;
+                document.body.classList.remove('game-loading');
+                report('ready');
+                if (restoreFocus) queueMicrotask(() => document.getElementById('mute-toggle')?.focus({ preventScroll: true }));
+            });
+        })();
+    </script>
+    <script>
         document.addEventListener("DOMContentLoaded", () => { 
             document.querySelectorAll("audio").forEach(e => { e.volume = .25 }); 
-            let e = document.getElementById("loading-progress"), t = document.getElementById("loading"), n = 0, d = setInterval(() => { n += 5, e.style.width = n + "%", n >= 100 && (clearInterval(d), setTimeout(() => { t.style.display = "none" }, 300)) }, 100);
 
             // Attempt to lock orientation if possible
             if (screen.orientation && screen.orientation.lock) {
@@ -161,7 +237,77 @@
             }, { once: true });
         });
     </script>
-    <script src="shooter_game.js"></script>
+    <script>
+        (() => {
+            // Release the original bundle's held keys when focus leaves the game.
+            const gameKeys = [
+                ['ArrowLeft', 'ArrowLeft'], ['KeyA', 'a'],
+                ['ArrowRight', 'ArrowRight'], ['KeyD', 'd'], ['Space', ' ']
+            ];
+            function releaseGameControls() {
+                for (const [code, key] of gameKeys) {
+                    window.dispatchEvent(new KeyboardEvent('keyup', { code, key, bubbles: true }));
+                }
+            }
+            window.addEventListener('blur', releaseGameControls);
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) releaseGameControls();
+            });
+            document.addEventListener('focusin', event => {
+                if (event.target.closest?.('#mute-toggle')) releaseGameControls();
+            });
+
+            // Forward real starts to the host page. Game-over ignores keyup,
+            // so release again after the bundle finishes resetting for a retry.
+            const originalGameLog = console.log.bind(console);
+            console.log = (...args) => {
+                originalGameLog(...args);
+                if (args[0] === 'Game initialized and started!') window.dispatchEvent(new Event('ariel-shooter-ready'));
+                if (args[0] === 'Game started' || args[0] === 'Game restarted') {
+                    queueMicrotask(releaseGameControls);
+                    if (window.parent !== window) {
+                        window.parent.postMessage({ type: 'ariel-game-start', game: 'shooter' }, window.location.origin);
+                    }
+                }
+            };
+        })();
+    </script>
+    <script>
+        (() => {
+            const enhancedControls = new WeakSet();
+            const isActivationKey = event => event.key === 'Enter' || event.key === ' ' || event.code === 'Space';
+
+            function enhanceMuteControl() {
+                const control = document.getElementById('mute-toggle');
+                if (!control) return;
+
+                control.setAttribute('role', 'button');
+                control.tabIndex = 0;
+                control.setAttribute('aria-label', control.textContent.trim() || 'Mute game audio');
+                if (enhancedControls.has(control)) return;
+
+                enhancedControls.add(control);
+                control.addEventListener('keydown', event => {
+                    if (!isActivationKey(event)) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!event.repeat) control.click();
+                });
+                control.addEventListener('keyup', event => {
+                    if (!isActivationKey(event)) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                });
+            }
+
+            // The bundled game creates this control after loading and changes
+            // its text when toggled. Keep its action name in sync with that text.
+            const observer = new MutationObserver(enhanceMuteControl);
+            observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+            enhanceMuteControl();
+        })();
+    </script>
+    <script id="game-bundle" src="shooter_game.js?v=20261002r"></script>
 </body>
 
 </html>
