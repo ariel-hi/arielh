@@ -144,8 +144,9 @@ const order = ['word-king','copysprig','worldbreaker','who-goes-first','comprehe
 const scenes = order.map((id, index) => {
   const project = projects.find(p => p.id === id);
   if (!project) throw new Error('Missing showcase project: ' + id);
-  const image = id === 'rufus' ? 'images/rufus-04.webp' : `images/project-${id}.webp`;
-  const preview = `<img class="scene-image" src="${image}" width="1280" height="720" alt="${esc(project.name)} preview" loading="lazy" decoding="async">`;
+  const image = id === 'rufus' ? 'images/rufus-04.webp' : id === 'word-king' ? 'images/project-word-king-20261006c.webp' : `images/project-${id}.webp`;
+  const [w, h, alt] = id === 'word-king' ? [420, 678, 'Word King gameplay'] : [1280, 720, esc(project.name) + ' preview'];
+  const preview = `<img class="scene-image" src="${image}" width="${w}" height="${h}" alt="${alt}" loading="lazy" decoding="async">`;
   const visual = id === 'copysprig' ? `<picture class="scene-picture"><source media="(max-width: 600px)" srcset="images/project-copysprig-mobile.webp">${preview}</picture>` : preview;
   return `<section class="project-scene" id="${esc(id)}" aria-label="${esc(project.name)}">
   <a class="scene-link" href="${esc(project.href)}" data-project="${esc(id)}">

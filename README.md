@@ -4,7 +4,7 @@ A personal site and project directory, built with HTML, CSS, and JavaScript. The
 
 The portfolio is static. Small PHP endpoints provide first-party leaderboards and optional private statistics. No third-party analytics account or leaderboard SDK is required.
 
-**Deployment status, October 6, 2026:** the rebuild is live at https://arielh.com on IONOS/Apache with PHP 8.3. All 88 release files passed HTTPS checks; first-party statistics are enabled and owner sign-in is verified. Deployment uses authenticated IONOS Webspace Explorer in Windows Chrome; no SFTP account is configured. The latest 1-file update, `20261006b`, is deployed. REL wheel movement now eases smoothly with consistent pixel, line and page input across refresh rates. Final verification passed all 92 HTTPS checks with no failed paths and analytics configured. The retained update archives return HTTP 403 over public HTTPS.
+**Deployment status, October 6, 2026:** the rebuild is live at https://arielh.com on IONOS/Apache with PHP 8.3. All 89 release files passed HTTPS checks; first-party statistics are enabled and owner sign-in is verified. Deployment uses authenticated IONOS Webspace Explorer in Windows Chrome; no SFTP account is configured. The latest 3-file update, `20261006c`, is deployed. Word King now shows a real, clearly framed gameplay capture on the homepage and in the shared project menu. Final verification passed all 93 HTTPS checks with no failed paths and analytics configured. The retained update archives return HTTP 403 over public HTTPS.
 
 ## Navigation redesign — October 4, 2026
 

@@ -12,7 +12,7 @@ window.ARIEL_ATLAS = [{"id":"word-king","name":"Word King","category":"games","t
   const path = location.pathname.replace(/index\.html$/, '');
   const current = projects.find(p => p.href === path);
   const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const artwork = p => p.id === 'kinetic' ? null : '/images/' + (p.id === 'rufus' ? 'rufus-04' : 'project-' + p.id) + '.webp';
+  const artwork = p => p.id === 'kinetic' ? null : p.id === 'word-king' ? '/images/project-word-king-20261006c.webp' : '/images/' + (p.id === 'rufus' ? 'rufus-04' : 'project-' + p.id) + '.webp';
   const dialog = document.createElement('dialog');
   dialog.className = 'atlas';
   dialog.setAttribute('aria-labelledby', 'atlas-title');
